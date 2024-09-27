@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     //Variable used to set the movement speed of the player
-    public int runSpeed = 1;
+    public float runSpeed = 1;
     //variable used to hold the horizontal value
     float horizontal;
     //variable used to hold the vertical value
