@@ -7,10 +7,9 @@ public class Enemy : MonoBehaviour
     public int maxHealth = 50; // Maximum enemy health
     public HealthBar healthBar; // Reference to the health bar
     public float damageDelay = 1f; // Delay for health bar update
-    public float damageTextShowDelay = 0.5f; // Delay before showing damage text
-    public float damageTextDisplayDuration = 1f; // Duration for how long damage text is displayed
     public GameObject damageTextPrefab; // Reference to the normal damage text prefab
-    public Vector3 offset = new Vector3(0, 2, 0); // Default offset
+    public Vector3 damageTextOffset = new Vector3(0, -0.3f, 0); // Default offset for damage text
+    public Transform hpBarCanvas; // Reference to the health bar canvas
 
     private void Start()
     {
@@ -27,13 +26,11 @@ public class Enemy : MonoBehaviour
         health -= damage;
         Debug.Log($"{gameObject.name} took {damage} damage. Remaining health: {health}");
 
-        // Show damage text after a delay
-        yield return new WaitForSeconds(damageTextShowDelay);
+        // Show damage text
         ShowDamageText(damage);
 
         // Delay before updating the health bar
         yield return new WaitForSeconds(damageDelay);
-
         UpdateHealthBar(); // Update the health bar
 
         if (health <= 0)
@@ -46,16 +43,10 @@ public class Enemy : MonoBehaviour
     {
         // Instantiate damage text prefab
         GameObject textInstance = Instantiate(damageTextPrefab, transform.position, Quaternion.identity);
-
-        // Set the damage text
         TextMesh textMesh = textInstance.GetComponent<TextMesh>();
         textMesh.text = damage.ToString();
-
-        // Apply the offset to the local position of the damage text
-        textInstance.transform.localPosition += offset;
-
-        // Start coroutine to destroy the text after damageTextDisplayDuration
-        StartCoroutine(DestroyTextAfterDelay(textInstance, damageTextDisplayDuration));
+        textInstance.transform.localPosition += damageTextOffset;
+        StartCoroutine(DestroyTextAfterDelay(textInstance, 1f));
     }
 
     private IEnumerator DestroyTextAfterDelay(GameObject textInstance, float delay)
@@ -67,13 +58,20 @@ public class Enemy : MonoBehaviour
     private void UpdateHealthBar()
     {
         float healthPercentage = (float)health / maxHealth;
-        healthBar.UpdateHealthBar(healthPercentage);
+        healthBar.UpdateHealthBar(healthPercentage); // Call the method to update health bar
     }
 
     private void Die()
     {
         Debug.Log($"{gameObject.name} has died.");
         // Handle enemy death (e.g., play animation, destroy object)
-        Destroy(gameObject);
+        Destroy(hpBarCanvas.gameObject); // Destroy the health bar canvas
+        Destroy(gameObject); // Destroy the enemy object
+    }
+
+    private void Update()
+    {
+        // Update the position of the health bar canvas above the enemy
+        hpBarCanvas.position = new Vector3(transform.position.x, transform.position.y + 0.9f, transform.position.z);
     }
 }

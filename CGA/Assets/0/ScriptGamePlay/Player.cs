@@ -13,19 +13,15 @@ public class PlayerAttack : MonoBehaviour
     private float nextAttackTime = 1f; // Time when the player can attack again
     private Animator animator; // Reference to the Animator component
 
-    private SphereCollider attackCollider;
-
     void Awake()
     {
         // Find the Animator on the child GameObject
-        animator = GetComponentInChildren<Animator>(); // Change here
-        attackCollider = gameObject.AddComponent<SphereCollider>();
-        attackCollider.radius = attackRange; // Set the attack range
-        attackCollider.isTrigger = true; // Make it a trigger
+        animator = GetComponentInChildren<Animator>();
     }
 
     void Update()
     {
+        // Handle player attack input and cooldown
         if (Input.GetButtonDown("Fire1") && Time.time >= nextAttackTime)
         {
             Attack();
@@ -38,8 +34,10 @@ public class PlayerAttack : MonoBehaviour
         // Trigger the attack animation
         animator.SetTrigger("Attack");
 
-        // Check for enemies within the collider
-        Collider[] enemiesHit = Physics.OverlapSphere(attackPoint.position, attackCollider.radius, enemyLayer);
+        // Check for enemies within attack range
+        Collider[] enemiesHit = Physics.OverlapSphere(attackPoint.position, attackRange, enemyLayer);
+
+        // Apply damage to each enemy hit
         foreach (Collider enemyCollider in enemiesHit)
         {
             Enemy enemy = enemyCollider.GetComponent<Enemy>();
@@ -52,6 +50,7 @@ public class PlayerAttack : MonoBehaviour
         }
     }
 
+    // Calculate the damage with potential critical hits
     private int CalculateDamage()
     {
         int damage = baseDamage;
@@ -63,9 +62,12 @@ public class PlayerAttack : MonoBehaviour
         return damage;
     }
 
+    // Visualize the attack range in the editor
     private void OnDrawGizmosSelected()
     {
+        if (attackPoint == null) return;
+
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(attackPoint.position, attackRange); // Visualize the attack area
+        Gizmos.DrawWireSphere(attackPoint.position, attackRange);
     }
 }

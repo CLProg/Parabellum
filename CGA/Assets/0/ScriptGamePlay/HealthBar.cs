@@ -3,10 +3,11 @@ using UnityEngine.UI;
 
 public class HealthBar : MonoBehaviour
 {
-    public Image healthBarImage;
+    public Image healthFillImage; // Reference to the health fill Image
 
+    // Call this method to update the health bar
     public void UpdateHealthBar(float healthPercentage)
     {
-        healthBarImage.fillAmount = healthPercentage; // Assuming you're using a filled image type
+        healthFillImage.fillAmount = healthPercentage; // Update the fill amount
     }
 }
