@@ -9,11 +9,16 @@ public class PlayerAttack : MonoBehaviour
     public float attackRange = 1.5f; // Attack range
     public LayerMask enemyLayer;   // Layer to identify enemies
     public Transform attackPoint;   // Point where the attack occurs
+    public float attackRate = 1f;   // Attacks per second
+    private float nextAttackTime = 1f; // Time when the player can attack again
+    private Animator animator; // Reference to the Animator component
 
     private SphereCollider attackCollider;
 
     void Awake()
     {
+        // Find the Animator on the child GameObject
+        animator = GetComponentInChildren<Animator>(); // Change here
         attackCollider = gameObject.AddComponent<SphereCollider>();
         attackCollider.radius = attackRange; // Set the attack range
         attackCollider.isTrigger = true; // Make it a trigger
@@ -21,14 +26,18 @@ public class PlayerAttack : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetButtonDown("Fire1"))
+        if (Input.GetButtonDown("Fire1") && Time.time >= nextAttackTime)
         {
             Attack();
+            nextAttackTime = Time.time + 1f / attackRate; // Set the next attack time
         }
     }
 
     private void Attack()
     {
+        // Trigger the attack animation
+        animator.SetTrigger("Attack");
+
         // Check for enemies within the collider
         Collider[] enemiesHit = Physics.OverlapSphere(attackPoint.position, attackCollider.radius, enemyLayer);
         foreach (Collider enemyCollider in enemiesHit)

@@ -11,11 +11,7 @@ public class CameraFollow : MonoBehaviour
 
     void Start()
     {
-        if (target == null)
-        {
-            Debug.LogError("CameraFollow: Target not assigned.");
-            return;
-        }
+        
 
         // Calculate the initial offset between the camera and the target
         offset = transform.position - target.position;

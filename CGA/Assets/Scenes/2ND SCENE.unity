@@ -2766,7 +2766,6 @@ GameObject:
   - component: {fileID: 502265350}
   - component: {fileID: 502265349}
   - component: {fileID: 502265354}
-  - component: {fileID: 502265355}
   m_Layer: 0
   m_Name: a
   m_TagString: Player
@@ -2856,10 +2855,11 @@ Transform:
   m_GameObject: {fileID: 502265348}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -63.68, y: 0.96, z: -19.28}
+  m_LocalPosition: {x: -63.68, y: 0.93, z: -19.28}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 906421424}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &502265354
@@ -2875,20 +2875,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   runSpeed: 5
---- !u!114 &502265355
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 502265348}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b741e1924b9cdc48bb53e850a449c91, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  target: {fileID: 0}
-  smoothing: 5
 --- !u!1001 &506535690
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4739,7 +4725,6 @@ GameObject:
   - component: {fileID: 906421423}
   - component: {fileID: 906421422}
   - component: {fileID: 906421426}
-  - component: {fileID: 906421425}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: Player
@@ -4814,27 +4799,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 906421421}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -57.33, y: 1.35, z: -25.02}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.17, y: 0.45, z: -6.09}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 502265352}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &906421425
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 906421421}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b741e1924b9cdc48bb53e850a449c91, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  target: {fileID: 0}
-  smoothing: 5
 --- !u!114 &906421426
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10307,7 +10278,6 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 906421424}
   - {fileID: 217151588}
   - {fileID: 1901407945}
   - {fileID: 2145269498}
