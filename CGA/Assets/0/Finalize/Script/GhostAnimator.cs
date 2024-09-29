@@ -26,6 +26,17 @@ public class GhostMovement : MonoBehaviour
     public float aggroRange = 5f;
     private Vector3 originalPosition;
 
+    // Attack-related variables
+    public float attackRange = 3f;
+    public int attackDamage = 10;
+    public float attackCooldown = 1f;
+    private float attackTimer = 0f;
+
+    // Attack point and layers
+    public Transform attackPoint; // Position from where attack originates
+    public float attackRadius = 0.5f; // Radius of attack area
+    public LayerMask playerLayer; // Layer for the player or target to hit
+
     void Awake()
     {
         // Link the GameObject Animator component to the animator variable
@@ -85,6 +96,18 @@ public class GhostMovement : MonoBehaviour
 
         // Set the Direction parameter based on the input
         animator.SetFloat("Direction", horizontal > 0 ? 1 : horizontal < 0 ? -1 : 0);
+
+        // Update attack timer
+        if (attackTimer > 0)
+        {
+            attackTimer -= Time.deltaTime;
+        }
+
+        // Check for attack
+        if (player != null && Vector3.Distance(transform.position, player.transform.position) <= attackRange && attackTimer <= 0)
+        {
+            Attack();
+        }
     }
 
     void FixedUpdate()
@@ -113,5 +136,38 @@ public class GhostMovement : MonoBehaviour
             scale.x *= -1;
             transform.localScale = scale;
         }
+    }
+
+    void Attack()
+    {
+        // Play attack animation
+        animator.SetTrigger("Attack");
+
+        // Perform attack (check for enemies in range)
+        Collider[] hitPlayers = Physics.OverlapSphere(attackPoint.position, attackRadius, playerLayer);
+
+        // Deal damage to all hit players
+        foreach (Collider player in hitPlayers)
+        {
+            // Ensure the player has a PlayerHealth component
+            PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
+            if (playerHealth != null)
+            {
+                playerHealth.TakeDamage(attackDamage);
+            }
+        }
+
+        // Start cooldown timer
+        attackTimer = attackCooldown;
+    }
+
+    // Visualize the attack range in the Unity editor
+    private void OnDrawGizmosSelected()
+    {
+        if (attackPoint == null)
+            return;
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(attackPoint.position, attackRadius);
     }
 }
