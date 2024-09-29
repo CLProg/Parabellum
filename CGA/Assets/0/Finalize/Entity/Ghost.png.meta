@@ -265,7 +265,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ghost_10
+      name: walk
       rect:
         serializedVersion: 2
         x: 64
@@ -286,11 +286,11 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ghost_11
+      name: walk1
       rect:
         serializedVersion: 2
         x: 377
-        y: 375
+        y: 377
         width: 225
         height: 160
       alignment: 0
@@ -307,7 +307,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ghost_12
+      name: walk2
       rect:
         serializedVersion: 2
         x: 64
@@ -328,7 +328,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ghost_14
+      name: walk3
       rect:
         serializedVersion: 2
         x: 391
@@ -360,11 +360,7 @@ TextureImporter:
     secondaryTextures: []
     nameFileIdTable:
       Ghost_0: -1627526992
-      Ghost_10: 290731622
-      Ghost_11: -817962628
-      Ghost_12: 1590115632
       Ghost_13: 546789058
-      Ghost_14: -778423768
       Ghost_2: -552070897
       Ghost_4: 1307596977
       Idle0: -1864120939
@@ -374,6 +370,10 @@ TextureImporter:
       Idle05: -341361526
       Idle06: -2014942150
       Idle07: -1032123460
+      walk: 290731622
+      walk1: -817962628
+      walk2: 1590115632
+      walk3: -778423768
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
