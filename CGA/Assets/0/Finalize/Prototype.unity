@@ -461,10 +461,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5257996
+  m_Radius: 0.72746235
   m_Height: 1.7860544
   m_Direction: 1
-  m_Center: {x: -0.18289247, y: 0.24954975, z: 0.046275705}
+  m_Center: {x: 0.018770296, y: 0.24954975, z: 0.046275705}
 --- !u!54 &1680019497
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -695,6 +695,11 @@ PrefabInstance:
       propertyPath: respawnPoint
       value: 
       objectReference: {fileID: 1033636323}
+    - target: {fileID: 2727937431570132646, guid: 07b76e8698b7c2e4ea07777503f632e6,
+        type: 3}
+      propertyPath: invulnerabilityDuration
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3046401677813983460, guid: 07b76e8698b7c2e4ea07777503f632e6,
         type: 3}
       propertyPath: hitSound
@@ -702,8 +707,13 @@ PrefabInstance:
       objectReference: {fileID: 8300000, guid: 4f459ba9ef5d05045ad6461a805833af, type: 3}
     - target: {fileID: 3046401677813983460, guid: 07b76e8698b7c2e4ea07777503f632e6,
         type: 3}
+      propertyPath: critChance
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3046401677813983460, guid: 07b76e8698b7c2e4ea07777503f632e6,
+        type: 3}
       propertyPath: attackRange
-      value: 0.5
+      value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 3046401677813983460, guid: 07b76e8698b7c2e4ea07777503f632e6,
         type: 3}
@@ -715,6 +725,11 @@ PrefabInstance:
       propertyPath: enemyLayer.m_Bits
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 3046401677813983460, guid: 07b76e8698b7c2e4ea07777503f632e6,
+        type: 3}
+      propertyPath: attackAnimationDuration
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 3082918142361070200, guid: 07b76e8698b7c2e4ea07777503f632e6,
         type: 3}
       propertyPath: runSpeed
@@ -724,6 +739,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5628289864450951839, guid: 07b76e8698b7c2e4ea07777503f632e6,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.47
+      objectReference: {fileID: 0}
+    - target: {fileID: 5628289864450951839, guid: 07b76e8698b7c2e4ea07777503f632e6,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 4.68
+      objectReference: {fileID: 0}
+    - target: {fileID: 5628289864450951839, guid: 07b76e8698b7c2e4ea07777503f632e6,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.07
       objectReference: {fileID: 0}
     - target: {fileID: 7586756634541999824, guid: 07b76e8698b7c2e4ea07777503f632e6,
         type: 3}
