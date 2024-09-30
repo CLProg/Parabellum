@@ -415,10 +415,10 @@ MonoBehaviour:
     attackDamage: 10
     attackCooldown: 2
     attackPoint: {fileID: 2046993443}
-    attackRadius: 0.23
+    attackRadius: 0.37
     playerLayer:
       serializedVersion: 2
-      m_Bits: 8
+      m_Bits: 72
   player: {fileID: 275199873}
   attackEffect: {fileID: 0}
 --- !u!95 &1680019495
@@ -572,7 +572,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f04c7c7d390c5e1458b77b3b020d57ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
+  maxHealth: 50
   invulnerabilityTime: 0.5
   hurtDelay: 0.4
   OnDamaged:
@@ -606,7 +606,7 @@ Transform:
   m_GameObject: {fileID: 2046993441}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.575, y: 0.305, z: 0}
+  m_LocalPosition: {x: 0.95, y: 0.305, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
