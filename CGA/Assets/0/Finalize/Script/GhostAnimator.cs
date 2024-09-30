@@ -1,17 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GhostMovement : MonoBehaviour
 {
-    // Var to hold horizontal and vertical value
-    float horizontal;
-    float vertical;
-    // Initialize an Animator variable
-    Animator animator;
-    // Boolean variable to test if facing right
-    bool facingRight;
-
     // Enemy movement variables
     public float moveSpeed = 3f;
     public float minMoveTime = 2f;
@@ -32,78 +22,58 @@ public class GhostMovement : MonoBehaviour
     public float attackCooldown = 1f;
     private float attackTimer = 0f;
 
-    // Attack point and layers
+    // Attack point and player layer
     public Transform attackPoint; // Position from where attack originates
     public float attackRadius = 0.5f; // Radius of attack area
     public LayerMask playerLayer; // Layer for the player or target to hit
 
+    // Facing direction
+    private bool facingRight = true;
+    Animator animator;
     void Awake()
     {
-        // Link the GameObject Animator component to the animator variable
+        // Initialize variables
         animator = GetComponent<Animator>();
-
-        // Store the original position of the ghost
         originalPosition = transform.position;
-
-        // Initialize enemy movement variables
         currentMoveTime = Random.Range(minMoveTime, maxMoveTime);
         moveDirection = Random.insideUnitCircle.normalized;
-
-        // Find the player GameObject
         player = GameObject.FindWithTag("Player");
     }
 
     void Update()
     {
-        // Check if the enemy's movement time is up
+        // Enemy movement logic
+        currentMoveTime -= Time.deltaTime;
         if (currentMoveTime <= 0)
         {
-            // Choose a new random direction
             moveDirection = Random.insideUnitCircle.normalized;
             currentMoveTime = Random.Range(minMoveTime, maxMoveTime);
         }
 
-        // If the player is found, calculate the direction towards the player
         if (player != null)
         {
             Vector3 direction = player.transform.position - transform.position;
-            float distanceToPlayer = direction.magnitude; // Get the distance to the player
-
-            // Normalize the direction
+            float distanceToPlayer = direction.magnitude;
             direction.Normalize();
 
-            // Check if the player is within the aggro range
             if (distanceToPlayer < aggroRange)
             {
-                // Move towards the player
-                moveDirection = new Vector2(direction.x, direction.z); // Use direction.z for movement along the z-axis
+                moveDirection = new Vector2(direction.x, direction.z);
             }
             else
             {
-                // If the player is outside the aggro range, return to the original position
                 direction = originalPosition - transform.position;
                 direction.Normalize();
                 moveDirection = new Vector2(direction.x, direction.z);
             }
         }
 
-        // Calculate the horizontal and vertical movement based on the direction
-        horizontal = moveDirection.x;
-        vertical = moveDirection.y;
-
-        // Set the Speed parameter in the animator component
-        animator.SetFloat("Speed", Mathf.Abs(horizontal) + Mathf.Abs(vertical));
-
-        // Set the Direction parameter based on the input
-        animator.SetFloat("Direction", horizontal > 0 ? 1 : horizontal < 0 ? -1 : 0);
+        animator.SetFloat("Speed", Mathf.Abs(moveDirection.x) + Mathf.Abs(moveDirection.y));
 
         // Update attack timer
-        if (attackTimer > 0)
-        {
-            attackTimer -= Time.deltaTime;
-        }
+        attackTimer -= Time.deltaTime;
 
-        // Check for attack
+        // Attack logic
         if (player != null && Vector3.Distance(transform.position, player.transform.position) <= attackRange && attackTimer <= 0)
         {
             Attack();
@@ -112,44 +82,24 @@ public class GhostMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        // Move the enemy in the chosen direction
+        // Move the enemy
         Vector3 newPosition = transform.position;
-        newPosition.x += horizontal * moveSpeed * Time.fixedDeltaTime;
-        newPosition.z += vertical * moveSpeed * Time.fixedDeltaTime; // Move along the z-axis
+        newPosition.x += moveDirection.x * moveSpeed * Time.fixedDeltaTime;
+        newPosition.z += moveDirection.y * moveSpeed * Time.fixedDeltaTime;
         transform.position = newPosition;
 
-        // Function for changing the character facing direction
-        Flip(horizontal);
-
-        // Decrement the current move time
-        currentMoveTime -= Time.fixedDeltaTime;
-    }
-
-    private void Flip(float horizontal)
-    {
-        // Check where the character is currently facing and adjust the graphics direction
-        if (horizontal < 0 && !facingRight || horizontal > 0 && facingRight)
-        {
-            facingRight = !facingRight;
-
-            Vector3 scale = transform.localScale;
-            scale.x *= -1;
-            transform.localScale = scale;
-        }
+        // Flip character direction
+        Flip(moveDirection.x);
     }
 
     void Attack()
     {
-        // Play attack animation
         animator.SetTrigger("Attack");
 
-        // Perform attack (check for enemies in range)
         Collider[] hitPlayers = Physics.OverlapSphere(attackPoint.position, attackRadius, playerLayer);
 
-        // Deal damage to all hit players
         foreach (Collider player in hitPlayers)
         {
-            // Ensure the player has a PlayerHealth component
             PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
             if (playerHealth != null)
             {
@@ -157,16 +107,22 @@ public class GhostMovement : MonoBehaviour
             }
         }
 
-        // Start cooldown timer
         attackTimer = attackCooldown;
     }
 
-    // Visualize the attack range in the Unity editor
-    private void OnDrawGizmosSelected()
+    void Flip(float horizontal)
     {
-        if (attackPoint == null)
-            return;
+        if (horizontal < 0 && facingRight || horizontal > 0 && !facingRight)
+        {
+            facingRight = !facingRight;
+            transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+        }
+    }
 
+    void OnDrawGizmosSelected()
+    {
+        // Visualize attack range
+        if (attackPoint == null) return;
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(attackPoint.position, attackRadius);
     }
