@@ -176,6 +176,8 @@ public class GhostBehavior : MonoBehaviour
 
     private void Attack()
     {
+        if (health.IsDead) return; // Prevent attacks if dead
+
         animator.SetTrigger("Attack");
         if (attackEffect != null)
         {
@@ -191,6 +193,7 @@ public class GhostBehavior : MonoBehaviour
 
         attackTimer = attack.attackCooldown;
     }
+
 
     private void UpdateAttackTimer()
     {
@@ -219,9 +222,18 @@ public class GhostBehavior : MonoBehaviour
     {
         animator.SetTrigger("Die");
         rb.velocity = Vector3.zero;
-        enabled = false; // Disable movement
+
+        // Disable all colliders so the ghost cannot interact with the player
+        Collider[] colliders = GetComponents<Collider>();
+        foreach (var collider in colliders)
+        {
+            collider.enabled = false;
+        }
+
+        enabled = false; // Disable movement and other behaviors
         StartCoroutine(DestroyAfterDelay(2f));
     }
+
 
     private IEnumerator DestroyAfterDelay(float delay)
     {

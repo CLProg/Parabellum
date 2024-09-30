@@ -122,4 +122,9 @@ public class GhostHealth : MonoBehaviour
     {
         return (float)currentHealth / maxHealth;
     }
+    public bool IsInvulnerable()
+    {
+        return invulnerabilityTimer > 0;
+    }
+
 }
