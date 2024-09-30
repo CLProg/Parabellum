@@ -1,129 +1,244 @@
 using UnityEngine;
+using System.Collections;
 
-public class GhostMovement : MonoBehaviour
+public class GhostBehavior : MonoBehaviour
 {
-    // Enemy movement variables
-    public float moveSpeed = 3f;
-    public float minMoveTime = 2f;
-    public float maxMoveTime = 5f;
-    private float currentMoveTime;
-    private Vector2 moveDirection;
-
-    // Reference to the player
-    public GameObject player;
-
-    // Aggro area for the ghost
-    public float aggroRange = 5f;
-    private Vector3 originalPosition;
-
-    // Attack-related variables
-    public float attackRange = 3f;
-    public int attackDamage = 10;
-    public float attackCooldown = 1f;
-    private float attackTimer = 0f;
-
-    // Attack point and player layer
-    public Transform attackPoint; // Position from where attack originates
-    public float attackRadius = 0.5f; // Radius of attack area
-    public LayerMask playerLayer; // Layer for the player or target to hit
-
-    // Facing direction
-    private bool facingRight = true;
-    Animator animator;
-    void Awake()
+    [System.Serializable]
+    public class MovementSettings
     {
-        // Initialize variables
+        public float moveSpeed = 3f;
+        public float minIdleTime = 2f;
+        public float maxIdleTime = 5f;
+        public float aggroRange = 5f;
+        public float deaggroRange = 8f;
+    }
+
+    [System.Serializable]
+    public class AttackSettings
+    {
+        public float attackRange = 3f;
+        public int attackDamage = 10;
+        public float attackCooldown = 1f;
+        public Transform attackPoint;
+        public float attackRadius = 0.5f;
+        public LayerMask playerLayer;
+    }
+
+    [Header("Movement")]
+    public MovementSettings movement;
+
+    [Header("Attack")]
+    public AttackSettings attack;
+
+    [Header("References")]
+    public GameObject player;
+    public ParticleSystem attackEffect;
+
+    private Vector3 originalPosition;
+    private Vector3 moveDirection;
+    private float currentIdleTime;
+    private float attackTimer;
+    private bool facingRight = true;
+
+    private Animator animator;
+    private Rigidbody rb;
+    private GhostHealth health;
+
+    private enum GhostState { Idle, Patrolling, Chasing, Attacking, Returning }
+    private GhostState currentState = GhostState.Idle;
+
+    private void Awake()
+    {
         animator = GetComponent<Animator>();
+        rb = GetComponent<Rigidbody>();
+        health = GetComponent<GhostHealth>();
+
         originalPosition = transform.position;
-        currentMoveTime = Random.Range(minMoveTime, maxMoveTime);
-        moveDirection = Random.insideUnitCircle.normalized;
+        currentIdleTime = Random.Range(movement.minIdleTime, movement.maxIdleTime);
         player = GameObject.FindWithTag("Player");
     }
 
-    void Update()
+    private void Update()
     {
-        // Enemy movement logic
-        currentMoveTime -= Time.deltaTime;
-        if (currentMoveTime <= 0)
+        if (health.IsDead) return; // Stop updating if dead
+
+        UpdateState();
+        UpdateAttackTimer();
+    }
+
+    private void FixedUpdate()
+    {
+        if (health.IsDead) return; // Stop moving if dead
+
+        Move();
+    }
+
+    private void UpdateState()
+    {
+        if (health.IsDead) return; // Ensure no state changes if dead
+
+        float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
+
+        switch (currentState)
         {
-            moveDirection = Random.insideUnitCircle.normalized;
-            currentMoveTime = Random.Range(minMoveTime, maxMoveTime);
+            case GhostState.Idle:
+                HandleIdleState(distanceToPlayer);
+                break;
+            case GhostState.Patrolling:
+                HandlePatrollingState(distanceToPlayer);
+                break;
+            case GhostState.Chasing:
+                HandleChasingState(distanceToPlayer);
+                break;
+            case GhostState.Attacking:
+                HandleAttackingState();
+                break;
+            case GhostState.Returning:
+                HandleReturningState();
+                break;
         }
+    }
 
-        if (player != null)
+    private void HandleIdleState(float distanceToPlayer)
+    {
+        currentIdleTime -= Time.deltaTime;
+        if (currentIdleTime <= 0)
         {
-            Vector3 direction = player.transform.position - transform.position;
-            float distanceToPlayer = direction.magnitude;
-            direction.Normalize();
-
-            if (distanceToPlayer < aggroRange)
-            {
-                moveDirection = new Vector2(direction.x, direction.z);
-            }
-            else
-            {
-                direction = originalPosition - transform.position;
-                direction.Normalize();
-                moveDirection = new Vector2(direction.x, direction.z);
-            }
+            currentState = GhostState.Patrolling;
+            SetRandomPatrolDirection();
         }
+        else if (distanceToPlayer <= movement.aggroRange)
+        {
+            currentState = GhostState.Chasing;
+        }
+    }
 
-        animator.SetFloat("Speed", Mathf.Abs(moveDirection.x) + Mathf.Abs(moveDirection.y));
+    private void HandlePatrollingState(float distanceToPlayer)
+    {
+        if (distanceToPlayer <= movement.aggroRange)
+        {
+            currentState = GhostState.Chasing;
+        }
+        else if (Vector3.Distance(transform.position, originalPosition) > movement.deaggroRange)
+        {
+            currentState = GhostState.Returning;
+        }
+    }
 
-        // Update attack timer
-        attackTimer -= Time.deltaTime;
+    private void HandleChasingState(float distanceToPlayer)
+    {
+        if (distanceToPlayer <= attack.attackRange)
+        {
+            currentState = GhostState.Attacking;
+        }
+        else if (distanceToPlayer > movement.deaggroRange)
+        {
+            currentState = GhostState.Returning;
+        }
+        else
+        {
+            moveDirection = (player.transform.position - transform.position).normalized;
+            moveDirection.y = 0; // Restrict vertical movement
+        }
+    }
 
-        // Attack logic
-        if (player != null && Vector3.Distance(transform.position, player.transform.position) <= attackRange && attackTimer <= 0)
+    private void HandleAttackingState()
+    {
+        if (attackTimer <= 0)
         {
             Attack();
         }
+        currentState = GhostState.Chasing;
     }
 
-    void FixedUpdate()
+    private void HandleReturningState()
     {
-        // Move the enemy
-        Vector3 newPosition = transform.position;
-        newPosition.x += moveDirection.x * moveSpeed * Time.fixedDeltaTime;
-        newPosition.z += moveDirection.y * moveSpeed * Time.fixedDeltaTime;
-        transform.position = newPosition;
+        moveDirection = (originalPosition - transform.position).normalized;
+        moveDirection.y = 0; // Restrict vertical movement
+        if (Vector3.Distance(transform.position, originalPosition) < 0.1f)
+        {
+            currentState = GhostState.Idle;
+            currentIdleTime = Random.Range(movement.minIdleTime, movement.maxIdleTime);
+        }
+    }
 
-        // Flip character direction
+    private void Move()
+    {
+        Vector3 movement = moveDirection * this.movement.moveSpeed * Time.fixedDeltaTime;
+        rb.MovePosition(rb.position + movement);
         Flip(moveDirection.x);
     }
 
-    void Attack()
+    private void SetRandomPatrolDirection()
+    {
+        moveDirection = new Vector3(Random.Range(-1f, 1f), 0, 0).normalized;
+    }
+
+    private void Attack()
     {
         animator.SetTrigger("Attack");
+        if (attackEffect != null)
+        {
+            attackEffect.Play();
+        }
 
-        Collider[] hitPlayers = Physics.OverlapSphere(attackPoint.position, attackRadius, playerLayer);
+        Collider[] hitPlayers = Physics.OverlapSphere(attack.attackPoint.position, attack.attackRadius, attack.playerLayer);
 
         foreach (Collider player in hitPlayers)
         {
-            PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
-            if (playerHealth != null)
+            player.GetComponent<PlayerHealth>()?.TakeDamage(attack.attackDamage);
+        }
+
+        attackTimer = attack.attackCooldown;
+    }
+
+    private void UpdateAttackTimer()
+    {
+        if (attackTimer > 0)
+        {
+            attackTimer -= Time.deltaTime;
+        }
+    }
+
+    private void Flip(float horizontal)
+    {
+        if (horizontal != 0)
+        {
+            bool shouldFlip = (horizontal < 0 && facingRight) || (horizontal > 0 && !facingRight);
+            if (shouldFlip)
             {
-                playerHealth.TakeDamage(attackDamage);
+                facingRight = !facingRight;
+                Vector3 scale = transform.localScale;
+                scale.x *= -1;
+                transform.localScale = scale;
             }
         }
-
-        attackTimer = attackCooldown;
     }
 
-    void Flip(float horizontal)
+    public void Die()
     {
-        if (horizontal < 0 && facingRight || horizontal > 0 && !facingRight)
-        {
-            facingRight = !facingRight;
-            transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
-        }
+        animator.SetTrigger("Die");
+        rb.velocity = Vector3.zero;
+        enabled = false; // Disable movement
+        StartCoroutine(DestroyAfterDelay(2f));
     }
 
-    void OnDrawGizmosSelected()
+    private IEnumerator DestroyAfterDelay(float delay)
     {
-        // Visualize attack range
-        if (attackPoint == null) return;
+        yield return new WaitForSeconds(delay);
+        Destroy(gameObject);
+    }
+
+    private void OnDrawGizmosSelected()
+    {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(attackPoint.position, attackRadius);
+        Gizmos.DrawWireSphere(transform.position, movement.aggroRange);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, movement.deaggroRange);
+        if (attack.attackPoint != null)
+        {
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireSphere(attack.attackPoint.position, attack.attackRadius);
+        }
     }
 }

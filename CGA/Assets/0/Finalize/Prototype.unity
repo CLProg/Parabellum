@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028334, g: 0.2257134, b: 0.30692226, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028352, g: 0.22571376, b: 0.30692244, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -384,7 +384,8 @@ GameObject:
   - component: {fileID: 1680019496}
   - component: {fileID: 1680019495}
   - component: {fileID: 1680019494}
-  m_Layer: 0
+  - component: {fileID: 1680019500}
+  m_Layer: 3
   m_Name: Enemy
   m_TagString: Untagged
   m_Icon: {fileID: 7250588514170254948, guid: 0000000000000000d000000000000000, type: 0}
@@ -403,19 +404,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f08287a7e21ac342bd1bb93a8b67228, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 2
-  minMoveTime: 5
-  maxMoveTime: 5
+  movement:
+    moveSpeed: 1.5
+    minIdleTime: 2
+    maxIdleTime: 5
+    aggroRange: 5
+    deaggroRange: 3.5
+  attack:
+    attackRange: 1
+    attackDamage: 10
+    attackCooldown: 2
+    attackPoint: {fileID: 2046993443}
+    attackRadius: 0.23
+    playerLayer:
+      serializedVersion: 2
+      m_Bits: 8
   player: {fileID: 275199873}
-  aggroRange: 2
-  attackRange: 1
-  attackDamage: 10
-  attackCooldown: 2
-  attackPoint: {fileID: 2046993443}
-  attackRadius: 0.16
-  playerLayer:
-    serializedVersion: 2
-    m_Bits: 64
+  attackEffect: {fileID: 0}
 --- !u!95 &1680019495
 Animator:
   serializedVersion: 5
@@ -555,6 +560,27 @@ Transform:
   - {fileID: 2046993443}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1680019500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1680019493}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f04c7c7d390c5e1458b77b3b020d57ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  invulnerabilityTime: 0.5
+  hurtDelay: 0.4
+  OnDamaged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnDeath:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &2046993441
 GameObject:
   m_ObjectHideFlags: 0
@@ -564,7 +590,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2046993443}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: AttackPoint
   m_TagString: Untagged
   m_Icon: {fileID: 7250588514170254948, guid: 0000000000000000d000000000000000, type: 0}
@@ -669,6 +695,16 @@ PrefabInstance:
       propertyPath: respawnPoint
       value: 
       objectReference: {fileID: 1033636323}
+    - target: {fileID: 3046401677813983460, guid: 07b76e8698b7c2e4ea07777503f632e6,
+        type: 3}
+      propertyPath: attackRange
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3046401677813983460, guid: 07b76e8698b7c2e4ea07777503f632e6,
+        type: 3}
+      propertyPath: enemyLayer.m_Bits
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 3082918142361070200, guid: 07b76e8698b7c2e4ea07777503f632e6,
         type: 3}
       propertyPath: runSpeed
