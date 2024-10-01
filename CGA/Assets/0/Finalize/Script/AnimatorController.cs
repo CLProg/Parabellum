@@ -4,14 +4,15 @@ using UnityEngine;
 
 public class AnimatorController : MonoBehaviour
 {
-    // Var to hold horizontal value		
+    // Variables to hold movement values
     float horizontal;
-    // Var to hold vertical value
     float vertical;
-    // Initialize an Animator variable
+
+    // Reference to the Animator component
     Animator animator;
+
     // Boolean variable to test if facing right
-    bool facingRight;
+    bool facingRight = true; // Initialize as true if the character starts facing right
 
     void Awake()
     {
@@ -21,38 +22,56 @@ public class AnimatorController : MonoBehaviour
 
     void Update()
     {
-        // Check if the user is pressing Horizontal input
+        // Get input for movement
         horizontal = Input.GetAxis("Horizontal");
-        // Check if the user is pressing Vertical input
         vertical = Input.GetAxis("Vertical");
 
+        // Calculate movement speed based on both axes
+        float speed = new Vector2(horizontal, vertical).magnitude; // Calculate speed based on the magnitude
+
         // Set the Speed parameter in the animator component
-        animator.SetFloat("Speed", Mathf.Abs(horizontal != 0 ? horizontal : vertical));
+        animator.SetFloat("Speed", speed);
 
         // Check for attack input
         if (Input.GetButtonDown("Fire1"))
         {
             Attack();
         }
+
+        // Check for flip input (A or D keys)
+        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D))
+        {
+            Flip(horizontal);
+        }
     }
 
     void FixedUpdate()
     {
-        // Function for changing the character facing direction
-        Flip(horizontal);
+        // No need to call Flip here, it’s handled in Update now
     }
 
     private void Flip(float horizontal)
     {
-        // Check where the character is currently facing and adjust the graphics direction
-        if (horizontal < 0 && !facingRight || horizontal > 0 && facingRight)
+        // Check if A key is pressed to flip left
+        if (horizontal < 0 && facingRight)
         {
-            facingRight = !facingRight;
-
-            Vector3 scale = transform.localScale;
-            scale.x *= -1;
-            transform.localScale = scale;
+            facingRight = false; // Set facing to left
+            FlipCharacter();
         }
+        // Check if D key is pressed to flip right
+        else if (horizontal > 0 && !facingRight)
+        {
+            facingRight = true; // Set facing to right
+            FlipCharacter();
+        }
+    }
+
+    private void FlipCharacter()
+    {
+        // Flip the character's scale
+        Vector3 scale = transform.localScale;
+        scale.x *= -1; // Invert the x scale
+        transform.localScale = scale; // Apply the new scale
     }
 
     private void Attack()

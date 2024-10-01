@@ -300,7 +300,6 @@ GameObject:
   - component: {fileID: 6221111512312264850}
   - component: {fileID: 6979014418917673004}
   - component: {fileID: 4744681432548736414}
-  - component: {fileID: 7825375691190132652}
   m_Layer: 0
   m_Name: Capsule
   m_TagString: Untagged
@@ -373,29 +372,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &7825375691190132652
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3214865249375327561}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7586756634541999824
 GameObject:
   m_ObjectHideFlags: 0
@@ -408,7 +384,6 @@ GameObject:
   - component: {fileID: 3082918142361070200}
   - component: {fileID: 4140173924479936232}
   - component: {fileID: 4835801399396814833}
-  - component: {fileID: 8707925385494686869}
   - component: {fileID: 5117485293165623060}
   - component: {fileID: 876545638866401353}
   - component: {fileID: 3046401677813983460}
@@ -500,29 +475,6 @@ CapsuleCollider:
   m_Height: 5.815718
   m_Direction: 1
   m_Center: {x: -0.029785633, y: 3.4501278, z: 0}
---- !u!136 &8707925385494686869
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7586756634541999824}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 1.64
-  m_Height: 1.82
-  m_Direction: 1
-  m_Center: {x: 0, y: 7.74, z: 0}
 --- !u!136 &5117485293165623060
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -584,11 +536,16 @@ MonoBehaviour:
   baseDamage: 10
   critChance: 0.2
   attackRange: 0.42
+  attackRate: 2
+  attackAnimationDuration: 0.5
   enemyLayer:
     serializedVersion: 2
     m_Bits: 8
   attackPoint: {fileID: 5628289864450951839}
-  attackRate: 2
+  attackSound: {fileID: 0}
+  hitSound: {fileID: 0}
+  attackVolume: 0.5
+  hitVolume: 0.5
 --- !u!114 &2727937431570132646
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -605,3 +562,12 @@ MonoBehaviour:
   currentHealth: 100
   respawnPoint: {fileID: 0}
   respawnDelay: 2
+  invulnerabilityDuration: 2
+  healthBar: {fileID: 0}
+  healthBarUpdateDelay: 0.5
+  animatorChildName: Graphics
+  takeDamageAnimTrigger: TakeDamage
+  deathAnimTrigger: Die
+  respawnAnimTrigger: Respawn
+  attackAnimTrigger: Attack
+  hurtAnimationDelay: 0.5

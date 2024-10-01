@@ -1,74 +1,225 @@
 using UnityEngine;
+using UnityEngine.UI;
+using System.Collections;
 
 public class PlayerHealth : MonoBehaviour
 {
-    public int maxHealth = 100; // Maximum health the player can have
-    public int currentHealth; // Current health of the player
-    public Transform respawnPoint; // The respawn location
-    public float respawnDelay = 2f; // Time delay before respawning the player
-    public float invulnerabilityDuration = 2f; // Duration of invulnerability after taking damage or respawning
+    [Header("Health Settings")]
+    public int maxHealth = 100;
+    public int currentHealth;
 
-    private bool isDead = false; // Check if the player is dead
-    private bool isInvulnerable = false; // Check if the player is currently invulnerable
+    [Header("Respawn Settings")]
+    public Transform respawnPoint;
+    public float respawnDelay = 2f;
+
+    [Header("Invulnerability Settings")]
+    public float invulnerabilityDuration = 2f;
+
+    [Header("UI Settings")]
+    public Image healthBar;
+    public float healthBarUpdateDelay = 0.5f;
+
+    [Header("Animation")]
+    public string animatorChildName = "Graphics"; // Name of the child object with the Animator
+    public string takeDamageAnimTrigger = "TakeDamage";
+    public string deathAnimTrigger = "Die";
+    public string respawnAnimTrigger = "Respawn";
+    public string attackAnimTrigger = "Attack";
+    public float hurtAnimationDelay = 0.5f; // Delay before playing hurt animation
+
+    private bool isDead = false;
+    private bool isInvulnerable = false;
+    private Animator animator;
+    private SpriteRenderer spriteRenderer;
+    private CapsuleCollider capsuleCollider;
+    private bool isDying = false;
+
+    // Variables to hold movement values
+    float horizontal;
+    float vertical;
+    bool facingRight = true; // Initialize as true if the character starts facing right
 
     void Start()
     {
-        currentHealth = maxHealth; // Set the player's health to max at the start
+        currentHealth = maxHealth;
+        UpdateHealthBar();
+
+        // Find the Animator component in the child object
+        FindAnimator();
+
+        // Find the SpriteRenderer component in the child object
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        if (spriteRenderer == null)
+        {
+            Debug.LogWarning("SpriteRenderer not found in child objects.");
+        }
+
+        // Find the CapsuleCollider component
+        capsuleCollider = GetComponent<CapsuleCollider>();
+        if (capsuleCollider == null)
+        {
+            Debug.LogWarning("CapsuleCollider not found.");
+        }
     }
 
-    // Method to take damage
+    void FindAnimator()
+    {
+        Transform childTransform = transform.Find(animatorChildName);
+        if (childTransform != null)
+        {
+            animator = childTransform.GetComponent<Animator>();
+            if (animator == null)
+            {
+                Debug.LogWarning($"Animator component not found on child '{animatorChildName}'");
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"Child object '{animatorChildName}' not found");
+        }
+    }
+
+    void Update()
+    {
+        // Get input for movement
+        horizontal = Input.GetAxis("Horizontal");
+        vertical = Input.GetAxis("Vertical");
+
+        // Calculate movement speed based on both axes
+        float speed = new Vector2(horizontal, vertical).magnitude;
+
+        // Set the Speed parameter in the animator component
+        animator.SetFloat("Speed", speed);
+
+        // Check for attack input
+        if (Input.GetButtonDown("Fire1"))
+        {
+            Attack();
+        }
+
+        // Flip character based on horizontal input
+        FlipCharacter(horizontal);
+    }
+
+    private void FlipCharacter(float horizontal)
+    {
+        // Check if A key is pressed to flip left
+        if (horizontal < 0 && facingRight)
+        {
+            facingRight = false; // Set facing to left
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.flipX = true; // Flip the sprite to the left
+            }
+        }
+        // Check if D key is pressed to flip right
+        else if (horizontal > 0 && !facingRight)
+        {
+            facingRight = true; // Set facing to right
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.flipX = false; // Flip the sprite to the right
+            }
+        }
+    }
+
     public void TakeDamage(int damage)
     {
-        if (isDead || isInvulnerable) return; // Do not take damage if the player is dead or invulnerable
+        if (isDead || isInvulnerable || isDying) return;
 
-        currentHealth -= damage; // Reduce the player's health by the damage amount
+        currentHealth -= damage;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
         Debug.Log($"Player took {damage} damage. Current health: {currentHealth}");
 
-        // Check if the player's health has reached zero
         if (currentHealth <= 0)
         {
             Die();
         }
         else
         {
+            StartCoroutine(HandleHurtAnimation());
             StartInvulnerability();
+        }
+
+        StartCoroutine(UpdateHealthBarWithDelay(healthBarUpdateDelay));
+    }
+
+    private IEnumerator HandleHurtAnimation()
+    {
+        yield return new WaitForSeconds(hurtAnimationDelay); // Wait for the specified delay
+        // Trigger take damage animation only if not dead or dying
+        if (animator != null && !isDead && !isDying)
+        {
+            animator.SetTrigger(takeDamageAnimTrigger);
         }
     }
 
-    // Method to handle player's death
     void Die()
     {
-        if (isDead) return; // Prevent multiple death calls
-        isDead = true; // Mark player as dead
+        if (isDead || isDying) return;
+
+        isDying = true; // Set the flag to indicate the player is dying
+        isDead = true;
         Debug.Log("Player has died!");
-        // Trigger death animation or any additional effects (optional)
-        // Delay respawn to allow for any death animations or effects
+
+        // Disable the capsule collider to prevent further interactions
+        if (capsuleCollider != null)
+        {
+            capsuleCollider.enabled = false;
+            Debug.Log("Capsule collider disabled.");
+        }
+
+        // Trigger death animation
+        if (animator != null)
+        {
+            animator.SetTrigger(deathAnimTrigger);
+        }
+
         Invoke(nameof(Respawn), respawnDelay);
     }
 
-    // Method to respawn the player at the respawn point
     void Respawn()
     {
-        isDead = false; // Reset death state
-        currentHealth = maxHealth; // Restore full health
-        // Move the player to the respawn point
+        isDying = false; // Reset the dying flag
+        isDead = false;
+        currentHealth = maxHealth;
+        UpdateHealthBar();
+
         transform.position = respawnPoint.position;
         transform.rotation = respawnPoint.rotation;
+
         Debug.Log("Player has respawned at the respawn point.");
+
+        // Trigger respawn animation
+        if (animator != null)
+        {
+            animator.SetTrigger(respawnAnimTrigger);
+        }
+
+        // Re-enable the collider
+        if (capsuleCollider != null)
+        {
+            capsuleCollider.enabled = true;
+            Debug.Log("Capsule collider enabled.");
+        }
+
         StartInvulnerability();
     }
 
-    // Method to heal the player (optional, in case you need healing functionality)
-    public void Heal(int healAmount)
+    IEnumerator UpdateHealthBarWithDelay(float delay)
     {
-        currentHealth += healAmount;
-        if (currentHealth > maxHealth)
+        yield return new WaitForSeconds(delay);
+        UpdateHealthBar();
+    }
+
+    void UpdateHealthBar()
+    {
+        if (healthBar != null)
         {
-            currentHealth = maxHealth;
+            healthBar.fillAmount = (float)currentHealth / maxHealth;
         }
     }
 
-    // Method to start invulnerability
     void StartInvulnerability()
     {
         isInvulnerable = true;
@@ -76,10 +227,15 @@ public class PlayerHealth : MonoBehaviour
         Invoke(nameof(EndInvulnerability), invulnerabilityDuration);
     }
 
-    // Method to end invulnerability
     void EndInvulnerability()
     {
         isInvulnerable = false;
         Debug.Log("Player is no longer invulnerable.");
+    }
+
+    private void Attack()
+    {
+        // Trigger the attack animation
+        animator.SetTrigger(attackAnimTrigger);
     }
 }
