@@ -1188,6 +1188,8 @@ MonoBehaviour:
       m_Bits: 64
   player: {fileID: 275199873}
   attackEffect: {fileID: 0}
+  attackSound: {fileID: 8300000, guid: a4e0d7f342798ca4b98306a9a124bc9d, type: 3}
+  facingRight: 1
 --- !u!95 &1680019495
 Animator:
   serializedVersion: 5
@@ -1342,7 +1344,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 50
   invulnerabilityTime: 0.5
-  hurtDelay: 0.4
+  hurtDelay: 0.2
+  hurtSound: {fileID: 8300000, guid: e6fdc16766c02ef45a71fe77504b7c6f, type: 3}
+  deathSound: {fileID: 8300000, guid: fd3bc0b093c69124b8e489a60742bf8a, type: 3}
+  hurtSoundDelay: 0.1
   OnDamaged:
     m_PersistentCalls:
       m_Calls: []
@@ -1709,6 +1714,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2727937431570132646, guid: 07b76e8698b7c2e4ea07777503f632e6,
         type: 3}
+      propertyPath: hurtSound
+      value: 
+      objectReference: {fileID: 8300000, guid: d474de02fee55224c8ad3c3ff547ec7b, type: 3}
+    - target: {fileID: 2727937431570132646, guid: 07b76e8698b7c2e4ea07777503f632e6,
+        type: 3}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
@@ -1729,8 +1739,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2727937431570132646, guid: 07b76e8698b7c2e4ea07777503f632e6,
         type: 3}
+      propertyPath: hurtSoundDelay
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2727937431570132646, guid: 07b76e8698b7c2e4ea07777503f632e6,
+        type: 3}
       propertyPath: animatorChildName
       value: Graphics
+      objectReference: {fileID: 0}
+    - target: {fileID: 2727937431570132646, guid: 07b76e8698b7c2e4ea07777503f632e6,
+        type: 3}
+      propertyPath: healthBarUpdateDelay
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 2727937431570132646, guid: 07b76e8698b7c2e4ea07777503f632e6,
         type: 3}
@@ -1742,6 +1762,11 @@ PrefabInstance:
       propertyPath: hitSound
       value: 
       objectReference: {fileID: 8300000, guid: 4f459ba9ef5d05045ad6461a805833af, type: 3}
+    - target: {fileID: 3046401677813983460, guid: 07b76e8698b7c2e4ea07777503f632e6,
+        type: 3}
+      propertyPath: hitVolume
+      value: 0.3
+      objectReference: {fileID: 0}
     - target: {fileID: 3046401677813983460, guid: 07b76e8698b7c2e4ea07777503f632e6,
         type: 3}
       propertyPath: critChance
@@ -1757,6 +1782,11 @@ PrefabInstance:
       propertyPath: attackSound
       value: 
       objectReference: {fileID: 8300000, guid: d7b06bf078c23614e821ec705e430a9d, type: 3}
+    - target: {fileID: 3046401677813983460, guid: 07b76e8698b7c2e4ea07777503f632e6,
+        type: 3}
+      propertyPath: attackVolume
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 3046401677813983460, guid: 07b76e8698b7c2e4ea07777503f632e6,
         type: 3}
       propertyPath: enemyLayer.m_Bits

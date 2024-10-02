@@ -34,11 +34,15 @@ public class GhostBehavior : MonoBehaviour
     public GameObject player;
     public ParticleSystem attackEffect;
 
+    [Header("Audio")]
+    public AudioClip attackSound;
+    private AudioSource audioSource;
+
     private Vector3 originalPosition;
     private Vector3 moveDirection;
     private float currentIdleTime;
     private float attackTimer;
-    private bool facingRight = true;
+    public bool facingRight = true;
 
     private Animator animator;
     private Rigidbody rb;
@@ -56,6 +60,12 @@ public class GhostBehavior : MonoBehaviour
         originalPosition = transform.position;
         currentIdleTime = Random.Range(movement.minIdleTime, movement.maxIdleTime);
         player = GameObject.FindWithTag("Player");
+
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
     }
 
     private void Update()
@@ -179,6 +189,10 @@ public class GhostBehavior : MonoBehaviour
         if (health.IsDead) return; // Prevent attacks if dead
 
         animator.SetTrigger("Attack");
+
+        // Play the attack sound when the attack is triggered
+        PlaySound(attackSound);
+
         if (attackEffect != null)
         {
             attackEffect.Play();
@@ -193,7 +207,6 @@ public class GhostBehavior : MonoBehaviour
 
         attackTimer = attack.attackCooldown;
     }
-
 
     private void UpdateAttackTimer()
     {
@@ -234,7 +247,6 @@ public class GhostBehavior : MonoBehaviour
         StartCoroutine(DestroyAfterDelay(2f));
     }
 
-
     private IEnumerator DestroyAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
@@ -251,6 +263,14 @@ public class GhostBehavior : MonoBehaviour
         {
             Gizmos.color = Color.blue;
             Gizmos.DrawWireSphere(attack.attackPoint.position, attack.attackRadius);
+        }
+    }
+
+    private void PlaySound(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+        {
+            audioSource.PlayOneShot(clip);
         }
     }
 }

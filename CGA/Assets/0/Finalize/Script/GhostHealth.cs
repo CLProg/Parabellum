@@ -8,6 +8,12 @@ public class GhostHealth : MonoBehaviour
     [SerializeField] private float invulnerabilityTime = 1f;
     [SerializeField] private float hurtDelay = 0.5f; // Delay before applying damage
 
+    [Header("Audio")]
+    public AudioClip hurtSound;
+    public AudioClip deathSound;
+    [SerializeField] private float hurtSoundDelay = 0.3f; // Delay before playing the hurt sound
+    private AudioSource audioSource;
+
     public UnityEvent OnDamaged;
     public UnityEvent OnDeath;
 
@@ -25,6 +31,12 @@ public class GhostHealth : MonoBehaviour
         currentHealth = maxHealth;
         ghostRenderer = GetComponent<Renderer>();
         originalColor = ghostRenderer.material.color; // Store the original color
+
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
     }
 
     private void Update()
@@ -63,10 +75,19 @@ public class GhostHealth : MonoBehaviour
         SetGhostColor(Color.red);
         SetGhostOpacity(1f);
 
+        // Start a coroutine to delay the hurt sound
+        StartCoroutine(DelayedHurtSound());
+
         if (currentHealth <= 0)
         {
             Die();
         }
+    }
+
+    private IEnumerator DelayedHurtSound()
+    {
+        yield return new WaitForSeconds(hurtSoundDelay); // Introduce the delay before playing the hurt sound
+        PlaySound(hurtSound);
     }
 
     private void Die()
@@ -77,8 +98,17 @@ public class GhostHealth : MonoBehaviour
         OnDeath?.Invoke();
         Debug.Log($"{name} has died.");
 
+        PlaySound(deathSound);
         // Set opacity to zero and wait for it to disappear
         StartCoroutine(FadeOutAndDestroy());
+    }
+
+    private void PlaySound(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+        {
+            audioSource.PlayOneShot(clip);
+        }
     }
 
     private IEnumerator FadeOutAndDestroy()
@@ -122,9 +152,9 @@ public class GhostHealth : MonoBehaviour
     {
         return (float)currentHealth / maxHealth;
     }
+
     public bool IsInvulnerable()
     {
         return invulnerabilityTimer > 0;
     }
-
 }

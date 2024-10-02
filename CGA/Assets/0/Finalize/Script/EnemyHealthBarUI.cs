@@ -11,6 +11,7 @@ public class BillboardingHealthBar : MonoBehaviour
     private Camera mainCamera;
     private GhostHealth ghostHealth;
     private RectTransform rectTransform;
+    private GhostBehavior ghostBehavior;
 
     private void Awake()
     {
@@ -19,10 +20,16 @@ public class BillboardingHealthBar : MonoBehaviour
         rectTransform = GetComponent<RectTransform>();
         mainCamera = Camera.main;
         ghostHealth = GetComponentInParent<GhostHealth>();
+        ghostBehavior = GetComponentInParent<GhostBehavior>();
 
         if (ghostHealth == null)
         {
             Debug.LogError("BillboardingHealthBar: No GhostHealth component found in parent!");
+        }
+
+        if (ghostBehavior == null)
+        {
+            Debug.LogError("BillboardingHealthBar: No GhostBehavior component found in parent!");
         }
 
         // Set the initial local position
@@ -31,7 +38,7 @@ public class BillboardingHealthBar : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (mainCamera == null || ghostHealth == null) return;
+        if (mainCamera == null || ghostHealth == null || ghostBehavior == null) return;
 
         // Calculate the direction from the camera to the health bar
         Vector3 directionToCamera = mainCamera.transform.position - transform.position;
@@ -43,9 +50,9 @@ public class BillboardingHealthBar : MonoBehaviour
             transform.rotation = Quaternion.LookRotation(-directionToCamera);
         }
 
-        // Ensure the health bar scale is correct
+        // Ensure the health bar scale is correct and matches the ghost's facing direction
         Vector3 scale = transform.localScale;
-        scale.x = Mathf.Abs(scale.x);
+        scale.x = ghostBehavior.facingRight ? Mathf.Abs(scale.x) : -Mathf.Abs(scale.x);
         scale.y = Mathf.Abs(scale.y);
         transform.localScale = scale;
 

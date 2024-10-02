@@ -27,6 +27,13 @@ public class PlayerHealth : MonoBehaviour
     public string attackAnimTrigger = "Attack";
     public float hurtAnimationDelay = 0.5f;
 
+    [Header("Audio")]
+    public AudioClip hurtSound;
+    public AudioClip deathSound;
+    public AudioClip respawnSound;
+    public float hurtSoundDelay = 0.3f; // Delay before playing hurt sound
+    private AudioSource audioSource;
+
     private bool isDead = false;
     private bool isInvulnerable = false;
     private Animator animator;
@@ -63,6 +70,11 @@ public class PlayerHealth : MonoBehaviour
         if (playerMovement == null)
         {
             Debug.LogWarning("PlayerMovement script not found.");
+        }
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
         }
     }
 
@@ -131,6 +143,16 @@ public class PlayerHealth : MonoBehaviour
     {
         if (isDead || isInvulnerable || isDying) return;
 
+        // Start coroutine to delay damage application
+        StartCoroutine(DelayedDamage(damage));
+    }
+
+    private IEnumerator DelayedDamage(int damage)
+    {
+        // Wait for the delay before applying damage
+        yield return new WaitForSeconds(hurtAnimationDelay);
+
+        // Apply the damage
         currentHealth -= damage;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
         Debug.Log($"Player took {damage} damage. Current health: {currentHealth}");
@@ -141,20 +163,22 @@ public class PlayerHealth : MonoBehaviour
         }
         else
         {
-            StartCoroutine(HandleHurtAnimation());
+            if (animator != null && !isDead && !isDying)
+            {
+                animator.SetTrigger(takeDamageAnimTrigger); // Trigger hurt animation
+            }
             StartInvulnerability();
+            StartCoroutine(DelayedHurtSound()); // Play sound with delay
         }
 
         StartCoroutine(UpdateHealthBarWithDelay(healthBarUpdateDelay));
     }
 
-    private IEnumerator HandleHurtAnimation()
+    private IEnumerator DelayedHurtSound()
     {
-        yield return new WaitForSeconds(hurtAnimationDelay);
-        if (animator != null && !isDead && !isDying)
-        {
-            animator.SetTrigger(takeDamageAnimTrigger);
-        }
+        // Delay the hurt sound by the specified time
+        yield return new WaitForSeconds(hurtSoundDelay);
+        PlaySound(hurtSound);
     }
 
     void Die()
@@ -165,6 +189,7 @@ public class PlayerHealth : MonoBehaviour
         isDead = true;
         Debug.Log("Player has died!");
 
+        PlaySound(deathSound);
         // Disable movement
         DisableMovement();
 
@@ -189,6 +214,8 @@ public class PlayerHealth : MonoBehaviour
         currentHealth = maxHealth;
         UpdateHealthBar();
 
+        PlaySound(respawnSound);
+
         transform.position = respawnPoint.position;
         transform.rotation = respawnPoint.rotation;
 
@@ -209,6 +236,14 @@ public class PlayerHealth : MonoBehaviour
         EnableMovement();
 
         StartInvulnerability();
+    }
+
+    void PlaySound(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+        {
+            audioSource.PlayOneShot(clip);
+        }
     }
 
     void DisableMovement()
