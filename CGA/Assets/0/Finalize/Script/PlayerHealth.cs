@@ -20,12 +20,12 @@ public class PlayerHealth : MonoBehaviour
     public float healthBarUpdateDelay = 0.5f;
 
     [Header("Animation")]
-    public string animatorChildName = "Graphics"; // Name of the child object with the Animator
+    public string animatorChildName = "Graphics";
     public string takeDamageAnimTrigger = "TakeDamage";
     public string deathAnimTrigger = "Die";
     public string respawnAnimTrigger = "Respawn";
     public string attackAnimTrigger = "Attack";
-    public float hurtAnimationDelay = 0.5f; // Delay before playing hurt animation
+    public float hurtAnimationDelay = 0.5f;
 
     private bool isDead = false;
     private bool isInvulnerable = false;
@@ -37,28 +37,32 @@ public class PlayerHealth : MonoBehaviour
     // Variables to hold movement values
     float horizontal;
     float vertical;
-    bool facingRight = true; // Initialize as true if the character starts facing right
+    bool facingRight = true;
+
+    // Reference to the player's movement script
+    private PlayerMovement playerMovement;
 
     void Start()
     {
         currentHealth = maxHealth;
         UpdateHealthBar();
 
-        // Find the Animator component in the child object
         FindAnimator();
-
-        // Find the SpriteRenderer component in the child object
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        capsuleCollider = GetComponent<CapsuleCollider>();
+        playerMovement = GetComponent<PlayerMovement>();
+
         if (spriteRenderer == null)
         {
             Debug.LogWarning("SpriteRenderer not found in child objects.");
         }
-
-        // Find the CapsuleCollider component
-        capsuleCollider = GetComponent<CapsuleCollider>();
         if (capsuleCollider == null)
         {
             Debug.LogWarning("CapsuleCollider not found.");
+        }
+        if (playerMovement == null)
+        {
+            Debug.LogWarning("PlayerMovement script not found.");
         }
     }
 
@@ -81,6 +85,8 @@ public class PlayerHealth : MonoBehaviour
 
     void Update()
     {
+        if (isDead || isDying) return; // Skip movement and attack input if dead or dying
+
         // Get input for movement
         horizontal = Input.GetAxis("Horizontal");
         vertical = Input.GetAxis("Vertical");
@@ -103,22 +109,20 @@ public class PlayerHealth : MonoBehaviour
 
     private void FlipCharacter(float horizontal)
     {
-        // Check if A key is pressed to flip left
         if (horizontal < 0 && facingRight)
         {
-            facingRight = false; // Set facing to left
+            facingRight = false;
             if (spriteRenderer != null)
             {
-                spriteRenderer.flipX = true; // Flip the sprite to the left
+                spriteRenderer.flipX = true;
             }
         }
-        // Check if D key is pressed to flip right
         else if (horizontal > 0 && !facingRight)
         {
-            facingRight = true; // Set facing to right
+            facingRight = true;
             if (spriteRenderer != null)
             {
-                spriteRenderer.flipX = false; // Flip the sprite to the right
+                spriteRenderer.flipX = false;
             }
         }
     }
@@ -146,8 +150,7 @@ public class PlayerHealth : MonoBehaviour
 
     private IEnumerator HandleHurtAnimation()
     {
-        yield return new WaitForSeconds(hurtAnimationDelay); // Wait for the specified delay
-        // Trigger take damage animation only if not dead or dying
+        yield return new WaitForSeconds(hurtAnimationDelay);
         if (animator != null && !isDead && !isDying)
         {
             animator.SetTrigger(takeDamageAnimTrigger);
@@ -158,18 +161,19 @@ public class PlayerHealth : MonoBehaviour
     {
         if (isDead || isDying) return;
 
-        isDying = true; // Set the flag to indicate the player is dying
+        isDying = true;
         isDead = true;
         Debug.Log("Player has died!");
 
-        // Disable the capsule collider to prevent further interactions
+        // Disable movement
+        DisableMovement();
+
         if (capsuleCollider != null)
         {
             capsuleCollider.enabled = false;
             Debug.Log("Capsule collider disabled.");
         }
 
-        // Trigger death animation
         if (animator != null)
         {
             animator.SetTrigger(deathAnimTrigger);
@@ -180,7 +184,7 @@ public class PlayerHealth : MonoBehaviour
 
     void Respawn()
     {
-        isDying = false; // Reset the dying flag
+        isDying = false;
         isDead = false;
         currentHealth = maxHealth;
         UpdateHealthBar();
@@ -190,20 +194,37 @@ public class PlayerHealth : MonoBehaviour
 
         Debug.Log("Player has respawned at the respawn point.");
 
-        // Trigger respawn animation
         if (animator != null)
         {
             animator.SetTrigger(respawnAnimTrigger);
         }
 
-        // Re-enable the collider
         if (capsuleCollider != null)
         {
             capsuleCollider.enabled = true;
             Debug.Log("Capsule collider enabled.");
         }
 
+        // Re-enable movement
+        EnableMovement();
+
         StartInvulnerability();
+    }
+
+    void DisableMovement()
+    {
+        if (playerMovement != null)
+        {
+            playerMovement.enabled = false;
+        }
+    }
+
+    void EnableMovement()
+    {
+        if (playerMovement != null)
+        {
+            playerMovement.enabled = true;
+        }
     }
 
     IEnumerator UpdateHealthBarWithDelay(float delay)
@@ -235,7 +256,6 @@ public class PlayerHealth : MonoBehaviour
 
     private void Attack()
     {
-        // Trigger the attack animation
         animator.SetTrigger(attackAnimTrigger);
     }
 }
