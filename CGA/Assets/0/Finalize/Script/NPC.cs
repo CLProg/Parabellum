@@ -13,6 +13,8 @@ public class NPC : MonoBehaviour
 
     [Header("Quest Objectives")]
     public List<TextMeshProUGUI> objectiveTexts;
+    public TextMeshProUGUI soulDefeatObjectiveText;
+    public TextMeshProUGUI keyCollectObjectiveText; // Reference to the key collection objective text
 
     [Header("Settings")]
     public float interactionDistance = 3f;
@@ -20,10 +22,15 @@ public class NPC : MonoBehaviour
     public KeyCode acceptQuestKey = KeyCode.Space;
     public Color completedObjectiveColor = Color.green;
 
+    [Header("Soul Defeat Objective")]
+    public int requiredSoulDefeats = 3;
+
     private bool isPlayerInRange = false;
     private Canvas questWindowCanvas;
     private Canvas interactionButtonCanvas;
     private List<bool> objectiveCompleted;
+    private int currentSoulDefeats = 0;
+    private bool questAccepted = false;
 
     private void Awake()
     {
@@ -35,7 +42,6 @@ public class NPC : MonoBehaviour
             Debug.LogError("Canvas components not found. Please check the setup.");
         }
 
-        // Initialize objective completion status
         objectiveCompleted = new List<bool>(new bool[objectiveTexts.Count]);
     }
 
@@ -43,12 +49,36 @@ public class NPC : MonoBehaviour
     {
         HideQuestWindow();
         HideCurrentQuestCanvas();
+        UpdateSoulDefeatObjective();
+        // Remove the call to UpdateKeyCollectObjective here
+
+        // Subscribe to the mob death event
+        GameEvents.OnMobKilled += HandleMobKilled;
+    }
+
+    private void OnDisable()
+    {
+        // Unsubscribe from the mob death event when the script is disabled
+        GameEvents.OnMobKilled -= HandleMobKilled;
     }
 
     private void Update()
     {
         CheckPlayerDistance();
         HandleInputs();
+    }
+
+    private void HandleInputs()
+    {
+        if (isPlayerInRange && Input.GetKeyDown(interactionKey))
+        {
+            ToggleQuestWindow();
+        }
+
+        if (questWindow.activeSelf && Input.GetKeyDown(acceptQuestKey))
+        {
+            AcceptQuest();
+        }
     }
 
     private void CheckPlayerDistance()
@@ -72,32 +102,10 @@ public class NPC : MonoBehaviour
                 HideInteractionPrompt();
                 EnableCanvases(false);
 
-                if (!currentQuestCanvas.activeSelf)
+                if (!questAccepted)
                 {
                     HideQuestWindow();
                 }
-            }
-        }
-    }
-
-    private void HandleInputs()
-    {
-        if (isPlayerInRange && Input.GetKeyDown(interactionKey))
-        {
-            ToggleQuestWindow();
-        }
-
-        if (questWindow.activeSelf && Input.GetKeyDown(acceptQuestKey))
-        {
-            AcceptQuest();
-        }
-
-        // For testing: Press 1-4 to complete objectives
-        for (int i = 0; i < 4; i++)
-        {
-            if (Input.GetKeyDown(KeyCode.Alpha1 + i))
-            {
-                CompleteObjective(i);
             }
         }
     }
@@ -149,8 +157,10 @@ public class NPC : MonoBehaviour
 
     private void AcceptQuest()
     {
+        questAccepted = true;
         Debug.Log("Quest accepted!");
         ShowCurrentQuestCanvas();
+        HideQuestWindow();
     }
 
     private void ShowCurrentQuestCanvas()
@@ -174,22 +184,64 @@ public class NPC : MonoBehaviour
         }
     }
 
-    public void CompleteObjective(int index)
+    public bool IsQuestCompleted()
     {
-        if (index >= 0 && index < objectiveTexts.Count)
+        return objectiveCompleted.TrueForAll(completed => completed) && currentSoulDefeats >= requiredSoulDefeats;
+    }
+
+    private void HandleMobKilled()
+    {
+        if (questAccepted)
         {
-            objectiveCompleted[index] = true;
-            objectiveTexts[index].color = completedObjectiveColor;
-            Debug.Log($"Objective {index + 1} completed!");
-        }
-        else
-        {
-            Debug.LogError($"Invalid objective index: {index}");
+            UpdateSoulDefeats(1);
         }
     }
 
-    public bool IsQuestCompleted()
+    private void UpdateSoulDefeats(int defeats)
     {
-        return objectiveCompleted.TrueForAll(completed => completed);
+        currentSoulDefeats += defeats;
+        if (currentSoulDefeats > requiredSoulDefeats)
+        {
+            currentSoulDefeats = requiredSoulDefeats;
+        }
+        UpdateSoulDefeatObjective();
+
+        if (currentSoulDefeats >= requiredSoulDefeats)
+        {
+            CompleteSoulDefeatObjective();
+        }
+    }
+
+    private void UpdateSoulDefeatObjective()
+    {
+        if (soulDefeatObjectiveText != null)
+        {
+            soulDefeatObjectiveText.text = $"- Defeat all souls in the area. ({currentSoulDefeats}/{requiredSoulDefeats})";
+        }
+    }
+
+    private void CompleteSoulDefeatObjective()
+    {
+        if (soulDefeatObjectiveText != null)
+        {
+            soulDefeatObjectiveText.color = completedObjectiveColor;
+        }
+        Debug.Log("Soul defeat objective completed!");
+    }
+
+    // New method to update key collection objective
+    public void UpdateKeyCollectObjective()
+    {
+        if (keyCollectObjectiveText != null)
+        {
+            keyCollectObjectiveText.color = completedObjectiveColor; // Change color to green
+            keyCollectObjectiveText.text = "- You got the Golden Key from Sulyap."; // Update the text to indicate completion
+            Debug.Log("Key collection objective completed!");
+        }
+    }
+    public bool IsKeyCollected()
+    {
+        // Assuming the text is set to indicate completion in UpdateKeyCollectObjective
+        return keyCollectObjectiveText.color == completedObjectiveColor;
     }
 }

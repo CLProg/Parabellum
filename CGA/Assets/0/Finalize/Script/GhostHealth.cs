@@ -1,4 +1,4 @@
-using System.Collections; // For IEnumerator
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -6,13 +6,17 @@ public class GhostHealth : MonoBehaviour
 {
     [SerializeField] private int maxHealth = 100;
     [SerializeField] private float invulnerabilityTime = 1f;
-    [SerializeField] private float hurtDelay = 0.5f; // Delay before applying damage
+    [SerializeField] private float hurtDelay = 0.5f;
 
     [Header("Audio")]
     public AudioClip hurtSound;
     public AudioClip deathSound;
-    [SerializeField] private float hurtSoundDelay = 0.3f; // Delay before playing the hurt sound
+    [SerializeField] private float hurtSoundDelay = 0.3f;
     private AudioSource audioSource;
+
+    [Header("Key Drop")]
+    [SerializeField] private GameObject keyPrefab; // Reference to the key prefab
+    [SerializeField] private Vector3 keyDropOffset = Vector3.zero; // Offset for the drop position
 
     public UnityEvent OnDamaged;
     public UnityEvent OnDeath;
@@ -24,13 +28,13 @@ public class GhostHealth : MonoBehaviour
     public bool IsDead => isDead;
 
     private Renderer ghostRenderer;
-    private Color originalColor; // To store the original color
+    private Color originalColor;
 
     private void Awake()
     {
         currentHealth = maxHealth;
         ghostRenderer = GetComponent<Renderer>();
-        originalColor = ghostRenderer.material.color; // Store the original color
+        originalColor = ghostRenderer.material.color;
 
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
@@ -45,7 +49,6 @@ public class GhostHealth : MonoBehaviour
         {
             invulnerabilityTimer -= Time.deltaTime;
 
-            // Change back to the original color after invulnerability ends
             if (invulnerabilityTimer <= 0)
             {
                 SetGhostColor(originalColor);
@@ -57,25 +60,22 @@ public class GhostHealth : MonoBehaviour
     {
         if (isDead || invulnerabilityTimer > 0) return;
 
-        // Start a coroutine to delay the damage application
         StartCoroutine(DelayedDamage(damage));
     }
 
     private IEnumerator DelayedDamage(int damage)
     {
-        yield return new WaitForSeconds(hurtDelay); // Introduce the delay before applying damage
+        yield return new WaitForSeconds(hurtDelay);
 
         currentHealth -= damage;
-        invulnerabilityTimer = invulnerabilityTime; // Reset invulnerability timer
+        invulnerabilityTimer = invulnerabilityTime;
 
         OnDamaged?.Invoke();
         Debug.Log($"Ghost took {damage} damage. Current health: {currentHealth}");
 
-        // Change color to red and set opacity to 1
         SetGhostColor(Color.red);
         SetGhostOpacity(1f);
 
-        // Start a coroutine to delay the hurt sound
         StartCoroutine(DelayedHurtSound());
 
         if (currentHealth <= 0)
@@ -86,7 +86,7 @@ public class GhostHealth : MonoBehaviour
 
     private IEnumerator DelayedHurtSound()
     {
-        yield return new WaitForSeconds(hurtSoundDelay); // Introduce the delay before playing the hurt sound
+        yield return new WaitForSeconds(hurtSoundDelay);
         PlaySound(hurtSound);
     }
 
@@ -99,9 +99,31 @@ public class GhostHealth : MonoBehaviour
         Debug.Log($"{name} has died.");
 
         PlaySound(deathSound);
-        // Set opacity to zero and wait for it to disappear
         StartCoroutine(FadeOutAndDestroy());
+
+        // Trigger the mob killed event
+        GameEvents.MobKilled();
+
+        // Drop the key
+        DropKey();
     }
+
+    private void DropKey()
+    {
+        if (keyPrefab != null)
+        {
+            // Apply the offset to the drop position
+            Vector3 dropPosition = transform.position + keyDropOffset;
+            Instantiate(keyPrefab, dropPosition, Quaternion.identity);
+            Debug.Log("Key dropped at position: " + dropPosition);
+        }
+        else
+        {
+            Debug.LogWarning("No key prefab assigned!");
+        }
+    }
+
+
 
     private void PlaySound(AudioClip clip)
     {
@@ -113,7 +135,7 @@ public class GhostHealth : MonoBehaviour
 
     private IEnumerator FadeOutAndDestroy()
     {
-        float fadeDuration = 1f; // Adjust duration as needed
+        float fadeDuration = 1f;
         float startOpacity = 1f;
         float elapsedTime = 0f;
 
@@ -125,7 +147,6 @@ public class GhostHealth : MonoBehaviour
             yield return null;
         }
 
-        // Ensure opacity is exactly 0 before destroying
         SetGhostOpacity(0f);
         Destroy(gameObject);
     }
