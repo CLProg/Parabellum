@@ -15,6 +15,7 @@ public class NPC : MonoBehaviour
     public List<TextMeshProUGUI> objectiveTexts;
     public TextMeshProUGUI soulDefeatObjectiveText;
     public TextMeshProUGUI keyCollectObjectiveText; // Reference to the key collection objective text
+    public TextMeshProUGUI portalUnlockObjectiveText;
 
     [Header("Settings")]
     public float interactionDistance = 3f;
@@ -50,6 +51,7 @@ public class NPC : MonoBehaviour
         HideQuestWindow();
         HideCurrentQuestCanvas();
         UpdateSoulDefeatObjective();
+        UpdatePortalUnlockObjective();
         // Remove the call to UpdateKeyCollectObjective here
 
         // Subscribe to the mob death event
@@ -186,7 +188,10 @@ public class NPC : MonoBehaviour
 
     public bool IsQuestCompleted()
     {
-        return objectiveCompleted.TrueForAll(completed => completed) && currentSoulDefeats >= requiredSoulDefeats;
+        return objectiveCompleted.TrueForAll(completed => completed)
+            && currentSoulDefeats >= requiredSoulDefeats
+            && IsKeyCollected()
+            && portalUnlockObjectiveText.color == completedObjectiveColor;
     }
 
     private void HandleMobKilled()
@@ -234,14 +239,33 @@ public class NPC : MonoBehaviour
     {
         if (keyCollectObjectiveText != null)
         {
-            keyCollectObjectiveText.color = completedObjectiveColor; // Change color to green
-            keyCollectObjectiveText.text = "- You got the Golden Key from Sulyap."; // Update the text to indicate completion
+            keyCollectObjectiveText.color = completedObjectiveColor;
+            keyCollectObjectiveText.text = "- You got the Golden Key from Sulyap.";
             Debug.Log("Key collection objective completed!");
         }
     }
+
+    public void UpdatePortalUnlockObjective()
+    {
+        if (portalUnlockObjectiveText != null)
+        {
+            portalUnlockObjectiveText.text = "- Use the Golden Key to unlock the portal.";
+        }
+    }
+    public void CompletePortalUnlockObjective()
+    {
+        if (portalUnlockObjectiveText != null)
+        {
+            portalUnlockObjectiveText.color = completedObjectiveColor;
+            portalUnlockObjectiveText.text = "- Used the Golden Key to unlock the portal.";
+            Debug.Log("Portal unlock objective completed!");
+        }
+    }
+
     public bool IsKeyCollected()
     {
-        // Assuming the text is set to indicate completion in UpdateKeyCollectObjective
         return keyCollectObjectiveText.color == completedObjectiveColor;
     }
+
+    
 }

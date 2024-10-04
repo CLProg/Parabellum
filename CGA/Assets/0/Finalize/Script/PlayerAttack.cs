@@ -81,6 +81,21 @@ public class PlayerAttack : MonoBehaviour
                     Debug.Log($"{ghostHealth.name} is invulnerable. No damage dealt.");
                 }
             }
+
+            if (enemyCollider.TryGetComponent(out KamatayanHP kamatayanHealth))
+            {
+                if (!kamatayanHealth.IsInvulnerable())
+                {
+                    int damage = CalculateDamage();
+                    kamatayanHealth.TakeDamage(damage);
+                    Debug.Log($"Attacked {kamatayanHealth.name} for {damage} damage.");
+                    hitEnemy = true;
+                }
+                else
+                {
+                    Debug.Log($"{kamatayanHealth.name} is invulnerable. No damage dealt.");
+                }
+            }
         }
 
         if (hitEnemy)

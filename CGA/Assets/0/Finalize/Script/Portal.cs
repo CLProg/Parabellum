@@ -1,37 +1,39 @@
 using UnityEngine;
-using TMPro; // For TextMeshPro UI elements
+using UnityEngine.SceneManagement;
+using TMPro;
+using System.Collections;
 
 public class Portal : MonoBehaviour
 {
     [Header("References")]
-    public GameObject portalCube; // The 3D object representing the portal
-    public GameObject promptMessage; // UI element to display the prompt
-    public GameObject interactionButton; // Reference to the interaction button
-    public NPC npc; // Reference to the NPC script to check the quest objectives
+    public GameObject portalCube;
+    public GameObject promptMessage;
+    public GameObject interactionButton;
+    public NPC npc;
 
     [Header("Settings")]
-    public float interactionDistance = 3f; // Distance within which the player can interact with the portal
-    public KeyCode interactionKey = KeyCode.E; // Key to interact with the portal
+    public float interactionDistance = 3f;
+    public KeyCode interactionKey = KeyCode.E;
+    public string destinationSceneName; // Name of the scene to teleport to
+    public float teleportDelay = 2f; // Delay before teleporting
 
-    private Transform playerTransform; // Player's transform
-    private bool isPlayerInRange = false; // Whether the player is in range to interact
-    private bool isPortalOpen = false; // Whether the portal is open
-    private TextMeshProUGUI promptText; // Reference to the TextMeshPro component
+    private Transform playerTransform;
+    private bool isPlayerInRange = false;
+    private bool isPortalOpen = false;
+    private TextMeshProUGUI promptText;
 
     private void Awake()
     {
-        playerTransform = Camera.main.transform; // Assuming the main camera represents the player
-        promptMessage.SetActive(false); // Hide the prompt message initially
-        interactionButton.SetActive(false); // Hide the interaction button initially
-
-        // Get the TextMeshProUGUI component from the promptMessage GameObject
+        playerTransform = Camera.main.transform;
+        promptMessage.SetActive(false);
+        interactionButton.SetActive(false);
         promptText = promptMessage.GetComponentInChildren<TextMeshProUGUI>();
     }
 
     private void Update()
     {
-        CheckPlayerDistance(); // Check if player is within interaction distance
-        HandleInput(); // Handle user input for interaction
+        CheckPlayerDistance();
+        HandleInput();
     }
 
     private void CheckPlayerDistance()
@@ -110,20 +112,37 @@ public class Portal : MonoBehaviour
 
     private void OpenPortal()
     {
-        // Change the portal cube color from gray to white
         Renderer renderer = portalCube.GetComponent<Renderer>();
         if (renderer != null)
         {
-            renderer.material.color = Color.white; // Change color to white
+            renderer.material.color = Color.white;
         }
 
         Debug.Log("Portal opened!");
 
-        // Mark the portal as open and hide the prompt and button
-        isPortalOpen = true; // Set the portal state to open
-        HidePromptMessage(); // Hide the prompt message
-        HideInteractionButton(); // Hide the interaction button
+        isPortalOpen = true;
+        HidePromptMessage();
+        HideInteractionButton();
 
-        // Add additional logic for what happens when the portal is opened
+        // Complete the portal unlock objective (assuming you've added this method to the NPC script)
+        npc.CompletePortalUnlockObjective();
+
+        // Start the teleportation process
+        StartCoroutine(TeleportPlayer());
+    }
+    private IEnumerator TeleportPlayer()
+    {
+        // Wait for the specified delay
+        yield return new WaitForSeconds(teleportDelay);
+
+        // Check if the destination scene name is set
+        if (string.IsNullOrEmpty(destinationSceneName))
+        {
+            Debug.LogError("Destination scene name is not set!");
+            yield break;
+        }
+
+        // Teleport the player to the new scene
+        SceneManager.LoadScene(destinationSceneName);
     }
 }
