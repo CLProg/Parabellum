@@ -1,28 +1,29 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
 public class KamatayanHP : MonoBehaviour
 {
+    [Header("Health Settings")]
     [SerializeField] private int maxHealth = 100;
     [SerializeField] private float invulnerabilityTime = 1f;
     [SerializeField] private float hurtDelay = 0.5f;
 
-    [Header("Audio")]
+    [Header("Audio Settings")]
     public AudioClip hurtSound;
     public AudioClip deathSound;
     [SerializeField] private float hurtSoundDelay = 0.3f;
     private AudioSource audioSource;
 
-    [Header("Animation")]
+    [Header("Animation Settings")]
     public Animator animator; // Reference to the Animator component
     public string hurtAnimationTrigger = "Hurt"; // Animator trigger for hurt animation
     public string deathAnimationTrigger = "Die"; // Animator trigger for death animation
 
-    [Header("Key Drop")]
-    [SerializeField] private GameObject keyPrefab;
-    [SerializeField] private Vector3 keyDropOffset = Vector3.zero;
+    [Header("Monster Spawn Settings")]
+    [SerializeField] private GameObject monsterPrefab; // The monster prefab to spawn
+    [SerializeField] private Transform spawnPosition; // Position where the monster will spawn
+    [SerializeField] private float spawnInterval = 4f; // Time interval for spawning monsters
 
     public UnityEvent OnDamaged;
     public UnityEvent OnDeath;
@@ -30,11 +31,11 @@ public class KamatayanHP : MonoBehaviour
     private int currentHealth;
     private float invulnerabilityTimer = 0f;
     private bool isDead = false;
-
-    public bool IsDead => isDead;
-
+    private Coroutine spawnCoroutine; // To track the monster spawning coroutine
     private Renderer ghostRenderer;
     private Color originalColor;
+
+    public bool IsDead => isDead;
 
     private void Awake()
     {
@@ -42,26 +43,25 @@ public class KamatayanHP : MonoBehaviour
         ghostRenderer = GetComponent<Renderer>();
         originalColor = ghostRenderer.material.color;
 
-        audioSource = GetComponent<AudioSource>();
-        if (audioSource == null)
-        {
-            audioSource = gameObject.AddComponent<AudioSource>();
-        }
-
+        audioSource = GetComponent<AudioSource>() ?? gameObject.AddComponent<AudioSource>();
         animator = GetComponent<Animator>(); // Ensure the animator is set
+    }
+
+    private void Start()
+    {
+        if (spawnPosition != null && monsterPrefab != null)
+        {
+            spawnCoroutine = StartCoroutine(SpawnMonsters());
+        }
+        else
+        {
+            Debug.LogWarning("Spawn position or monster prefab is not assigned.");
+        }
     }
 
     private void Update()
     {
-        if (invulnerabilityTimer > 0)
-        {
-            invulnerabilityTimer -= Time.deltaTime;
-
-            if (invulnerabilityTimer <= 0)
-            {
-                SetGhostColor(originalColor);
-            }
-        }
+        HandleInvulnerabilityTimer();
     }
 
     public void TakeDamage(int damage)
@@ -81,15 +81,7 @@ public class KamatayanHP : MonoBehaviour
         OnDamaged?.Invoke();
         Debug.Log($"Kamatayan took {damage} damage. Current health: {currentHealth}");
 
-        SetGhostColor(Color.red); // Change color to red
-        SetGhostOpacity(1f); // Set opacity to 1
-
-        PlaySound(hurtSound);
-        animator.SetTrigger(hurtAnimationTrigger);
-
-        // Reset color after invulnerability period
-        yield return new WaitForSeconds(invulnerabilityTime);
-        SetGhostColor(originalColor); // Reset color to original
+        TriggerHurtEffects();
 
         if (currentHealth <= 0)
         {
@@ -97,6 +89,22 @@ public class KamatayanHP : MonoBehaviour
         }
     }
 
+    private void TriggerHurtEffects()
+    {
+        SetGhostColor(Color.red); // Change color to red
+        SetGhostOpacity(1f); // Set opacity to 1
+        PlaySound(hurtSound);
+        animator.SetTrigger(hurtAnimationTrigger);
+
+        // Reset color after invulnerability period
+        StartCoroutine(ResetGhostColor());
+    }
+
+    private IEnumerator ResetGhostColor()
+    {
+        yield return new WaitForSeconds(invulnerabilityTime);
+        SetGhostColor(originalColor); // Reset color to original
+    }
 
     private void Die()
     {
@@ -106,29 +114,37 @@ public class KamatayanHP : MonoBehaviour
         OnDeath?.Invoke();
         Debug.Log($"{name} has died.");
 
-        // Play death sound and animation
         PlaySound(deathSound);
         animator.SetTrigger(deathAnimationTrigger);
         StartCoroutine(FadeOutAndDestroy());
 
-        // Trigger the mob killed event
-        GameEvents.MobKilled();
-
-        // Drop the key
-        DropKey();
+        // Stop spawning monsters when dead
+        if (spawnCoroutine != null)
+        {
+            StopCoroutine(spawnCoroutine);
+            spawnCoroutine = null;
+        }
     }
 
-    private void DropKey()
+    private IEnumerator SpawnMonsters()
     {
-        if (keyPrefab != null)
+        while (!isDead)
         {
-            Vector3 dropPosition = transform.position + keyDropOffset;
-            Instantiate(keyPrefab, dropPosition, Quaternion.identity);
-            Debug.Log("Key dropped at position: " + dropPosition);
+            SpawnMonster();
+            yield return new WaitForSeconds(spawnInterval);
+        }
+    }
+
+    private void SpawnMonster()
+    {
+        if (monsterPrefab != null && spawnPosition != null)
+        {
+            Instantiate(monsterPrefab, spawnPosition.position, Quaternion.identity);
+            Debug.Log($"Spawned a monster at position: {spawnPosition.position}");
         }
         else
         {
-            Debug.LogWarning("No key prefab assigned!");
+            Debug.LogWarning("No monster prefab or spawn position assigned!");
         }
     }
 
@@ -142,20 +158,32 @@ public class KamatayanHP : MonoBehaviour
 
     private IEnumerator FadeOutAndDestroy()
     {
-        float fadeDuration = 1f;
-        float startOpacity = 1f;
+        const float fadeDuration = 1f;
         float elapsedTime = 0f;
 
         while (elapsedTime < fadeDuration)
         {
             elapsedTime += Time.deltaTime;
-            float newOpacity = Mathf.Lerp(startOpacity, 0f, elapsedTime / fadeDuration);
+            float newOpacity = Mathf.Lerp(1f, 0f, elapsedTime / fadeDuration);
             SetGhostOpacity(newOpacity);
             yield return null;
         }
 
         SetGhostOpacity(0f);
         Destroy(gameObject);
+    }
+
+    private void HandleInvulnerabilityTimer()
+    {
+        if (invulnerabilityTimer > 0)
+        {
+            invulnerabilityTimer -= Time.deltaTime;
+
+            if (invulnerabilityTimer <= 0)
+            {
+                SetGhostColor(originalColor);
+            }
+        }
     }
 
     private void SetGhostColor(Color color)
@@ -176,13 +204,7 @@ public class KamatayanHP : MonoBehaviour
         }
     }
 
-    public float GetHealthPercentage()
-    {
-        return (float)currentHealth / maxHealth;
-    }
+    public float GetHealthPercentage() => (float)currentHealth / maxHealth;
 
-    public bool IsInvulnerable()
-    {
-        return invulnerabilityTimer > 0;
-    }
+    public bool IsInvulnerable() => invulnerabilityTimer > 0;
 }
