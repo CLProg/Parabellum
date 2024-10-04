@@ -14,10 +14,6 @@ public class GhostHealth : MonoBehaviour
     [SerializeField] private float hurtSoundDelay = 0.3f;
     private AudioSource audioSource;
 
-    [Header("Key Drop")]
-    [SerializeField] private GameObject keyPrefab; // Reference to the key prefab
-    [SerializeField] private Vector3 keyDropOffset = Vector3.zero; // Offset for the drop position
-
     public UnityEvent OnDamaged;
     public UnityEvent OnDeath;
 
@@ -103,27 +99,7 @@ public class GhostHealth : MonoBehaviour
 
         // Trigger the mob killed event
         GameEvents.MobKilled();
-
-        // Drop the key
-        DropKey();
     }
-
-    private void DropKey()
-    {
-        if (keyPrefab != null)
-        {
-            // Apply the offset to the drop position
-            Vector3 dropPosition = transform.position + keyDropOffset;
-            Instantiate(keyPrefab, dropPosition, Quaternion.identity);
-            Debug.Log("Key dropped at position: " + dropPosition);
-        }
-        else
-        {
-            Debug.LogWarning("No key prefab assigned!");
-        }
-    }
-
-
 
     private void PlaySound(AudioClip clip)
     {

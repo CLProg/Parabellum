@@ -26,6 +26,10 @@ public class NPC : MonoBehaviour
     [Header("Soul Defeat Objective")]
     public int requiredSoulDefeats = 3;
 
+    [Header("Mob Spawning")]
+    public GameObject[] mobPrefabs; // Array for different mob prefabs
+    public Transform[] spawnPoints; // Array of spawn points
+
     private bool isPlayerInRange = false;
     private Canvas questWindowCanvas;
     private Canvas interactionButtonCanvas;
@@ -163,6 +167,9 @@ public class NPC : MonoBehaviour
         Debug.Log("Quest accepted!");
         ShowCurrentQuestCanvas();
         HideQuestWindow();
+
+        // Call the method to spawn mobs
+        SpawnMobs();
     }
 
     private void ShowCurrentQuestCanvas()
@@ -267,5 +274,15 @@ public class NPC : MonoBehaviour
         return keyCollectObjectiveText.color == completedObjectiveColor;
     }
 
-    
+    // Method to spawn mobs after the quest is accepted
+    private void SpawnMobs()
+    {
+        for (int i = 0; i < spawnPoints.Length; i++)
+        {
+            // Randomly select a mob prefab from the array
+            GameObject mobToSpawn = mobPrefabs[Random.Range(0, mobPrefabs.Length)];
+            Instantiate(mobToSpawn, spawnPoints[i].position, spawnPoints[i].rotation);
+        }
+        Debug.Log("Mobs spawned at designated spawn points.");
+    }
 }

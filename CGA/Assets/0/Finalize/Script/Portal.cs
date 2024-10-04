@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Portal : MonoBehaviour
 {
@@ -17,6 +18,9 @@ public class Portal : MonoBehaviour
     public string destinationSceneName; // Name of the scene to teleport to
     public float teleportDelay = 2f; // Delay before teleporting
 
+    [Header("Child Objects")]
+    public List<GameObject> childObjectsToToggle; // List of child objects to hide/show
+
     private Transform playerTransform;
     private bool isPlayerInRange = false;
     private bool isPortalOpen = false;
@@ -28,6 +32,7 @@ public class Portal : MonoBehaviour
         promptMessage.SetActive(false);
         interactionButton.SetActive(false);
         promptText = promptMessage.GetComponentInChildren<TextMeshProUGUI>();
+        HideToggleableChildObjects(); // Hide specified child objects on start
     }
 
     private void Update()
@@ -66,11 +71,37 @@ public class Portal : MonoBehaviour
         if (!isPortalOpen)
         {
             promptMessage.SetActive(true); // Activate the prompt message UI element
-            // Check if the key objective is completed
-            bool hasKey = npc.IsKeyCollected(); // Check if the key is collected
-            // Update prompt message text based on key status using TextMeshPro
-            promptText.text = hasKey ? "Press 'E' to open the portal." : "You need a key to open this.";
+            UpdatePromptText();
         }
+    }
+
+    private void UpdatePromptText()
+    {
+        bool hasKey = npc.IsKeyCollected();
+        bool isSoulObjectiveCompleted = IsSoulObjectiveCompleted();
+
+        if (hasKey && isSoulObjectiveCompleted)
+        {
+            promptText.text = "Press 'E' to open the portal.";
+        }
+        else if (!hasKey && !isSoulObjectiveCompleted)
+        {
+            promptText.text = "You need the Golden Key and to defeat all souls to open this.";
+        }
+        else if (!hasKey)
+        {
+            promptText.text = "You need the Golden Key to open this.";
+        }
+        else // !isSoulObjectiveCompleted
+        {
+            promptText.text = "You need to defeat all souls to open this.";
+        }
+    }
+
+    private bool IsSoulObjectiveCompleted()
+    {
+        // Check if the soul defeat objective text is green
+        return npc.soulDefeatObjectiveText.color == npc.completedObjectiveColor;
     }
 
     private void HidePromptMessage()
@@ -99,14 +130,28 @@ public class Portal : MonoBehaviour
 
     private void TryOpenPortal()
     {
-        // Check if the key objective is completed
-        if (npc.IsKeyCollected()) // Check if the key is collected
+        bool hasKey = npc.IsKeyCollected();
+        bool isSoulObjectiveCompleted = IsSoulObjectiveCompleted();
+
+        if (hasKey && isSoulObjectiveCompleted)
         {
             OpenPortal(); // Open the portal
         }
         else
         {
-            Debug.Log("You need a key to open this."); // Log if key is not collected
+            if (!hasKey && !isSoulObjectiveCompleted)
+            {
+                Debug.Log("You need the Golden Key and to defeat all souls to open this.");
+            }
+            else if (!hasKey)
+            {
+                Debug.Log("You need the Golden Key to open this.");
+            }
+            else // !isSoulObjectiveCompleted
+            {
+                Debug.Log("You need to defeat all souls to open this.");
+            }
+            UpdatePromptText(); // Update the prompt text to reflect the current status
         }
     }
 
@@ -124,12 +169,16 @@ public class Portal : MonoBehaviour
         HidePromptMessage();
         HideInteractionButton();
 
-        // Complete the portal unlock objective (assuming you've added this method to the NPC script)
+        // Show specified child objects when the portal is opened
+        ShowToggleableChildObjects();
+
+        // Complete the portal unlock objective
         npc.CompletePortalUnlockObjective();
 
         // Start the teleportation process
         StartCoroutine(TeleportPlayer());
     }
+
     private IEnumerator TeleportPlayer()
     {
         // Wait for the specified delay
@@ -144,5 +193,27 @@ public class Portal : MonoBehaviour
 
         // Teleport the player to the new scene
         SceneManager.LoadScene(destinationSceneName);
+    }
+
+    private void HideToggleableChildObjects()
+    {
+        foreach (GameObject child in childObjectsToToggle)
+        {
+            if (child != null)
+            {
+                child.SetActive(false);
+            }
+        }
+    }
+
+    private void ShowToggleableChildObjects()
+    {
+        foreach (GameObject child in childObjectsToToggle)
+        {
+            if (child != null)
+            {
+                child.SetActive(true);
+            }
+        }
     }
 }

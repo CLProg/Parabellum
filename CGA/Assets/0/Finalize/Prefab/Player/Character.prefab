@@ -275,8 +275,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 310dedf8e0532404fb30e2634dbb650e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseDamage: 10
-  critChance: 0.1
+  baseDamage: 12
+  critChance: 0.05
   attackRange: 0.6
   attackRate: 2
   attackAnimationDuration: 0.5
@@ -300,8 +300,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d942f4b30ca9d34e9508591affb5a46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 50
-  currentHealth: 50
+  maxHealth: 100
+  currentHealth: 100
   respawnPoint: {fileID: 0}
   respawnDelay: 2
   invulnerabilityDuration: 1

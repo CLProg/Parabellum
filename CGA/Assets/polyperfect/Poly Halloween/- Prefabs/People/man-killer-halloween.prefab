@@ -3232,4 +3232,8 @@ MonoBehaviour:
   interactionKey: 101
   acceptQuestKey: 32
   completedObjectiveColor: {r: 0, g: 1, b: 0, a: 1}
-  requiredSoulDefeats: 1
+  requiredSoulDefeats: 3
+  mobPrefabs:
+  - {fileID: 8783835074935893022, guid: f4052734c029ee84c938e36d517f9246, type: 3}
+  spawnPoints:
+  - {fileID: 0}
