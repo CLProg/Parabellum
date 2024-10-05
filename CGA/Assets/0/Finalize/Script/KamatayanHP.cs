@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
+using UnityEngine.SceneManagement; // Include SceneManagement namespace
 
 public class KamatayanHP : MonoBehaviour
 {
@@ -13,7 +13,6 @@ public class KamatayanHP : MonoBehaviour
     [Header("Audio Settings")]
     public AudioClip hurtSound;
     public AudioClip deathSound;
-    public AudioClip endMusic; // Music to play at the end
     public AudioClip bossSound; // Sound to play when the player is near the boss
     [SerializeField] private float hurtSoundDelay = 0.3f;
     [SerializeField] private float bossSoundMaxVolume = 1f; // Maximum volume of the boss sound
@@ -33,7 +32,6 @@ public class KamatayanHP : MonoBehaviour
 
     [Header("UI Settings")]
     [SerializeField] private GameObject endScreenCanvas; // Reference to your end screen Canvas object
-    [SerializeField] private float endScreenDelay = 2f;  // Delay before showing the end screen
 
     [Header("Player Settings")]
     [SerializeField] private Transform playerTransform; // Reference to the player
@@ -256,24 +254,10 @@ public class KamatayanHP : MonoBehaviour
     {
         Debug.Log("Game Ended: Victory or Defeat");
 
-        // Show the end screen
-        if (endScreenCanvas != null)
-        {
-            endScreenCanvas.SetActive(true);
+        // Wait for a short period before transitioning
+        yield return new WaitForSeconds(1f); // Optional delay for effect
 
-            // Get the AudioSource from the end screen canvas and play the end music
-            AudioSource endScreenAudioSource = endScreenCanvas.GetComponent<AudioSource>();
-            if (endScreenAudioSource != null && endMusic != null)
-            {
-                endScreenAudioSource.clip = endMusic;
-                endScreenAudioSource.Play();
-            }
-        }
-
-        // Wait for the specified delay before destroying the Kamatayan object
-        yield return new WaitForSeconds(endScreenDelay);
-
-        // Fade out Kamatayan before destroying
-        yield return FadeOutAndDestroy(); // Wait for fade out coroutine
+        // Load the end scene
+        SceneManager.LoadScene("ENDING"); // Ensure this matches the name of your end scene
     }
 }
