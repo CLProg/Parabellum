@@ -6904,6 +6904,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Character
       objectReference: {fileID: 0}
+    - target: {fileID: 8464832027977589318, guid: 4cf162eb910f0f34c9dae4b2c6d521f7,
+        type: 3}
+      propertyPath: attackRate
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8464832027977589318, guid: 4cf162eb910f0f34c9dae4b2c6d521f7,
+        type: 3}
+      propertyPath: attackAnimationDuration
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 9171845610187065711, guid: 4cf162eb910f0f34c9dae4b2c6d521f7,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -9341,7 +9351,7 @@ PrefabInstance:
     - target: {fileID: 6653265668766581059, guid: 6185410ef89d5ef47967535a3ba08ef1,
         type: 3}
       propertyPath: movement.moveSpeed
-      value: 1.5
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: 6653265668766581059, guid: 6185410ef89d5ef47967535a3ba08ef1,
         type: 3}

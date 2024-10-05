@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerAttack : MonoBehaviour
@@ -118,6 +120,10 @@ public class PlayerAttack : MonoBehaviour
         }
     }
 
+    public bool IsAttacking() // Add this method to allow AnimatorController to check attacking state
+    {
+        return isAttacking; // Return the current attacking state
+    }
 
     private void PlayAttackSound()
     {

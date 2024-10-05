@@ -7,17 +7,19 @@ public class AnimatorController : MonoBehaviour
     // Variables to hold movement values
     float horizontal;
     float vertical;
-
     // Reference to the Animator component
     Animator animator;
-
+    // Reference to PlayerAttack script
+    PlayerAttack playerAttack;
     // Boolean variable to test if facing right
-    bool facingRight = true; // Initialize as true if the character starts facing right
+    bool facingRight = true;
+    // New variable to track if attack is on cooldown
+    bool attackOnCooldown = false;
 
     void Awake()
     {
-        // Link the GameObject Animator component to the animator variable
         animator = GetComponent<Animator>();
+        playerAttack = GetComponent<PlayerAttack>();
     }
 
     void Update()
@@ -27,15 +29,14 @@ public class AnimatorController : MonoBehaviour
         vertical = Input.GetAxis("Vertical");
 
         // Calculate movement speed based on both axes
-        float speed = new Vector2(horizontal, vertical).magnitude; // Calculate speed based on the magnitude
-
-        // Set the Speed parameter in the animator component
+        float speed = new Vector2(horizontal, vertical).magnitude;
         animator.SetFloat("Speed", speed);
 
-        // Check for attack input
-        if (Input.GetButtonDown("Fire1"))
+        // Check for attack input only if the player is not currently attacking and not on cooldown
+        if (Input.GetButtonDown("Fire1") && !playerAttack.IsAttacking() && !attackOnCooldown)
         {
             Attack();
+            StartCoroutine(AttackCooldown());
         }
 
         // Check for flip input (A or D keys)
@@ -45,38 +46,36 @@ public class AnimatorController : MonoBehaviour
         }
     }
 
-    void FixedUpdate()
-    {
-        // No need to call Flip here, it’s handled in Update now
-    }
-
     private void Flip(float horizontal)
     {
-        // Check if A key is pressed to flip left
         if (horizontal < 0 && facingRight)
         {
-            facingRight = false; // Set facing to left
+            facingRight = false;
             FlipCharacter();
         }
-        // Check if D key is pressed to flip right
         else if (horizontal > 0 && !facingRight)
         {
-            facingRight = true; // Set facing to right
+            facingRight = true;
             FlipCharacter();
         }
     }
 
     private void FlipCharacter()
     {
-        // Flip the character's scale
         Vector3 scale = transform.localScale;
-        scale.x *= -1; // Invert the x scale
-        transform.localScale = scale; // Apply the new scale
+        scale.x *= -1;
+        transform.localScale = scale;
     }
 
     private void Attack()
     {
-        // Trigger the attack animation
         animator.SetTrigger("Attack");
+    }
+
+    private IEnumerator AttackCooldown()
+    {
+        attackOnCooldown = true;
+        yield return new WaitForSeconds(playerAttack.attackRate);
+        attackOnCooldown = false;
     }
 }
