@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 public class KamatayanHP : MonoBehaviour
 {
@@ -12,18 +13,30 @@ public class KamatayanHP : MonoBehaviour
     [Header("Audio Settings")]
     public AudioClip hurtSound;
     public AudioClip deathSound;
+    public AudioClip endMusic; // Music to play at the end
+    public AudioClip bossSound; // Sound to play when the player is near the boss
     [SerializeField] private float hurtSoundDelay = 0.3f;
+    [SerializeField] private float bossSoundMaxVolume = 1f; // Maximum volume of the boss sound
+    [SerializeField] private float detectionRange = 10f; // Range at which the sound reaches maximum volume
     private AudioSource audioSource;
+    private AudioSource bossAudioSource; // Separate AudioSource for the boss sound
 
     [Header("Animation Settings")]
-    public Animator animator; // Reference to the Animator component
-    public string hurtAnimationTrigger = "Hurt"; // Animator trigger for hurt animation
-    public string deathAnimationTrigger = "Die"; // Animator trigger for death animation
+    public Animator animator;
+    public string hurtAnimationTrigger = "Hurt";
+    public string deathAnimationTrigger = "Die";
 
     [Header("Monster Spawn Settings")]
-    [SerializeField] private GameObject monsterPrefab; // The monster prefab to spawn
-    [SerializeField] private Transform spawnPosition; // Position where the monster will spawn
-    [SerializeField] private float spawnInterval = 4f; // Time interval for spawning monsters
+    [SerializeField] private GameObject monsterPrefab;
+    [SerializeField] private Transform spawnPosition;
+    [SerializeField] private float spawnInterval = 4f;
+
+    [Header("UI Settings")]
+    [SerializeField] private GameObject endScreenCanvas; // Reference to your end screen Canvas object
+    [SerializeField] private float endScreenDelay = 2f;  // Delay before showing the end screen
+
+    [Header("Player Settings")]
+    [SerializeField] private Transform playerTransform; // Reference to the player
 
     public UnityEvent OnDamaged;
     public UnityEvent OnDeath;
@@ -31,7 +44,7 @@ public class KamatayanHP : MonoBehaviour
     private int currentHealth;
     private float invulnerabilityTimer = 0f;
     private bool isDead = false;
-    private Coroutine spawnCoroutine; // To track the monster spawning coroutine
+    private Coroutine spawnCoroutine;
     private Renderer ghostRenderer;
     private Color originalColor;
 
@@ -44,7 +57,18 @@ public class KamatayanHP : MonoBehaviour
         originalColor = ghostRenderer.material.color;
 
         audioSource = GetComponent<AudioSource>() ?? gameObject.AddComponent<AudioSource>();
-        animator = GetComponent<Animator>(); // Ensure the animator is set
+
+        // Create a separate AudioSource for the boss sound and set it to loop
+        bossAudioSource = gameObject.AddComponent<AudioSource>();
+        bossAudioSource.clip = bossSound;
+        bossAudioSource.loop = true;
+        bossAudioSource.volume = 0f; // Start at 0 volume
+        bossAudioSource.playOnAwake = false;
+        bossAudioSource.spatialBlend = 1f; // Make the sound 3D (optional)
+        bossAudioSource.maxDistance = detectionRange; // Adjust max range for 3D sound (optional)
+        bossAudioSource.Play(); // Start playing but volume will be adjusted dynamically
+
+        animator = GetComponent<Animator>();
     }
 
     private void Start()
@@ -57,11 +81,31 @@ public class KamatayanHP : MonoBehaviour
         {
             Debug.LogWarning("Spawn position or monster prefab is not assigned.");
         }
+
+        if (endScreenCanvas != null)
+        {
+            endScreenCanvas.SetActive(false); // Ensure the end screen is hidden at the start
+        }
     }
 
     private void Update()
     {
         HandleInvulnerabilityTimer();
+        AdjustBossSoundBasedOnDistance();
+    }
+
+    private void AdjustBossSoundBasedOnDistance()
+    {
+        if (playerTransform == null || bossAudioSource == null) return;
+
+        // Calculate distance between player and boss
+        float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
+
+        // Calculate volume based on distance (the closer the louder)
+        float volume = Mathf.Clamp01(1 - (distanceToPlayer / detectionRange)) * bossSoundMaxVolume;
+
+        // Apply the volume to the bossAudioSource
+        bossAudioSource.volume = volume;
     }
 
     public void TakeDamage(int damage)
@@ -91,19 +135,18 @@ public class KamatayanHP : MonoBehaviour
 
     private void TriggerHurtEffects()
     {
-        SetGhostColor(Color.red); // Change color to red
-        SetGhostOpacity(1f); // Set opacity to 1
+        SetGhostColor(Color.red);
+        SetGhostOpacity(1f);
         PlaySound(hurtSound);
         animator.SetTrigger(hurtAnimationTrigger);
 
-        // Reset color after invulnerability period
         StartCoroutine(ResetGhostColor());
     }
 
     private IEnumerator ResetGhostColor()
     {
         yield return new WaitForSeconds(invulnerabilityTime);
-        SetGhostColor(originalColor); // Reset color to original
+        SetGhostColor(originalColor);
     }
 
     private void Die()
@@ -118,12 +161,13 @@ public class KamatayanHP : MonoBehaviour
         animator.SetTrigger(deathAnimationTrigger);
         StartCoroutine(FadeOutAndDestroy());
 
-        // Stop spawning monsters when dead
         if (spawnCoroutine != null)
         {
             StopCoroutine(spawnCoroutine);
             spawnCoroutine = null;
         }
+
+        StartCoroutine(EndGame());
     }
 
     private IEnumerator SpawnMonsters()
@@ -170,7 +214,7 @@ public class KamatayanHP : MonoBehaviour
         }
 
         SetGhostOpacity(0f);
-        Destroy(gameObject);
+        Destroy(gameObject); // This will now only happen after the fade-out is complete
     }
 
     private void HandleInvulnerabilityTimer()
@@ -207,4 +251,29 @@ public class KamatayanHP : MonoBehaviour
     public float GetHealthPercentage() => (float)currentHealth / maxHealth;
 
     public bool IsInvulnerable() => invulnerabilityTimer > 0;
+
+    private IEnumerator EndGame()
+    {
+        Debug.Log("Game Ended: Victory or Defeat");
+
+        // Show the end screen
+        if (endScreenCanvas != null)
+        {
+            endScreenCanvas.SetActive(true);
+
+            // Get the AudioSource from the end screen canvas and play the end music
+            AudioSource endScreenAudioSource = endScreenCanvas.GetComponent<AudioSource>();
+            if (endScreenAudioSource != null && endMusic != null)
+            {
+                endScreenAudioSource.clip = endMusic;
+                endScreenAudioSource.Play();
+            }
+        }
+
+        // Wait for the specified delay before destroying the Kamatayan object
+        yield return new WaitForSeconds(endScreenDelay);
+
+        // Fade out Kamatayan before destroying
+        yield return FadeOutAndDestroy(); // Wait for fade out coroutine
+    }
 }
