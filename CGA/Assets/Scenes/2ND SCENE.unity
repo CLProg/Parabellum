@@ -6889,6 +6889,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2347368368561553249, guid: 4cf162eb910f0f34c9dae4b2c6d521f7,
+        type: 3}
+      propertyPath: runSpeed
+      value: 2.2
+      objectReference: {fileID: 0}
     - target: {fileID: 2789828530025945047, guid: 4cf162eb910f0f34c9dae4b2c6d521f7,
         type: 3}
       propertyPath: respawnPoint
@@ -9310,6 +9315,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 505651321317204997, guid: 6185410ef89d5ef47967535a3ba08ef1,
         type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.254
+      objectReference: {fileID: 0}
+    - target: {fileID: 505651321317204997, guid: 6185410ef89d5ef47967535a3ba08ef1,
+        type: 3}
       propertyPath: m_LocalPosition.z
       value: -0.265
       objectReference: {fileID: 0}
@@ -9323,6 +9333,21 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 1414381639}
+    - target: {fileID: 6653265668766581059, guid: 6185410ef89d5ef47967535a3ba08ef1,
+        type: 3}
+      propertyPath: attack.attackRange
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6653265668766581059, guid: 6185410ef89d5ef47967535a3ba08ef1,
+        type: 3}
+      propertyPath: movement.moveSpeed
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6653265668766581059, guid: 6185410ef89d5ef47967535a3ba08ef1,
+        type: 3}
+      propertyPath: attack.attackCooldown
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 7143917690891223516, guid: 6185410ef89d5ef47967535a3ba08ef1,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -9377,6 +9402,16 @@ PrefabInstance:
         type: 3}
       propertyPath: bossSound
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7466261409339101423, guid: 6185410ef89d5ef47967535a3ba08ef1,
+        type: 3}
+      propertyPath: maxHealth
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 7466261409339101423, guid: 6185410ef89d5ef47967535a3ba08ef1,
+        type: 3}
+      propertyPath: spawnInterval
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 7466261409339101423, guid: 6185410ef89d5ef47967535a3ba08ef1,
         type: 3}

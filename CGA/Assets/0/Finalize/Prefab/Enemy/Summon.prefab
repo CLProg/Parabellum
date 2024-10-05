@@ -183,7 +183,7 @@ MonoBehaviour:
   attack:
     attackRange: 2
     attackDamage: 4
-    attackCooldown: 2
+    attackCooldown: 1
     attackPoint: {fileID: 4326103402093352136}
     attackRadius: 0.32
     playerLayer:
@@ -205,8 +205,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f04c7c7d390c5e1458b77b3b020d57ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 15
-  invulnerabilityTime: 0.5
+  maxHealth: 20
+  invulnerabilityTime: 0.1
   hurtDelay: 0.2
   hurtSound: {fileID: 8300000, guid: e6fdc16766c02ef45a71fe77504b7c6f, type: 3}
   deathSound: {fileID: 8300000, guid: fd3bc0b093c69124b8e489a60742bf8a, type: 3}

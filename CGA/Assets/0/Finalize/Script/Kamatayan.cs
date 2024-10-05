@@ -149,6 +149,7 @@ public class Kamatayan : MonoBehaviour
         {
             moveDirection = (player.transform.position - transform.position).normalized;
             moveDirection.y = 0; // Restrict vertical movement
+            rb.velocity = moveDirection * movement.moveSpeed; // Use velocity for movement
         }
     }
 
