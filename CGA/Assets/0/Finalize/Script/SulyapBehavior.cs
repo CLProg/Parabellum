@@ -18,13 +18,16 @@ public class SulyapBehavior : MonoBehaviour
     public class AttackSettings
     {
         public float attackRange = 3f;
-        public int attackDamage = 10;
-        public float attackCooldown = 1f;
+        public int baseDamage = 10;
+        public float damageVariance = 0.2f; // 20% variance
+        public float attackCooldown = 1.5f;
         public Transform attackPoint;
         public float attackRadius = 0.5f;
         public LayerMask playerLayer;
+        public float criticalHitChance = 0.1f; // 10% chance of critical hit
+        public float criticalHitMultiplier = 1.5f;
     }
-
+    private float lastAttackTime;
     [Header("Movement")]
     public MovementSettings movement;
 
@@ -86,9 +89,21 @@ public class SulyapBehavior : MonoBehaviour
 
     private void UpdateState()
     {
-        if (health.IsDead) return; // Ensure no state changes if dead
+        if (health.IsDead) return;
+
+        if (player == null)
+        {
+            player = GameObject.FindWithTag("Player");
+            if (player == null)
+            {
+                Debug.LogError("Player not found!");
+                return;
+            }
+        }
 
         float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
+
+        Debug.Log($"Current State: {currentState}, Distance to Player: {distanceToPlayer}");
 
         switch (currentState)
         {
@@ -102,7 +117,7 @@ public class SulyapBehavior : MonoBehaviour
                 HandleChasingState(distanceToPlayer);
                 break;
             case GhostState.Attacking:
-                HandleAttackingState();
+                HandleAttackingState(distanceToPlayer);
                 break;
             case GhostState.Returning:
                 HandleReturningState();
@@ -117,10 +132,12 @@ public class SulyapBehavior : MonoBehaviour
         {
             currentState = GhostState.Patrolling;
             SetRandomPatrolDirection();
+            Debug.Log("Transitioning to Patrolling state");
         }
         else if (distanceToPlayer <= movement.aggroRange)
         {
             currentState = GhostState.Chasing;
+            Debug.Log("Player detected! Transitioning to Chasing state");
         }
     }
 
@@ -129,10 +146,12 @@ public class SulyapBehavior : MonoBehaviour
         if (distanceToPlayer <= movement.aggroRange)
         {
             currentState = GhostState.Chasing;
+            Debug.Log("Player in range! Transitioning to Chasing state");
         }
         else if (Vector3.Distance(transform.position, originalPosition) > movement.deaggroRange)
         {
             currentState = GhostState.Returning;
+            Debug.Log("Too far from original position. Returning.");
         }
     }
 
@@ -141,10 +160,12 @@ public class SulyapBehavior : MonoBehaviour
         if (distanceToPlayer <= attack.attackRange)
         {
             currentState = GhostState.Attacking;
+            Debug.Log("In attack range! Transitioning to Attacking state");
         }
         else if (distanceToPlayer > movement.deaggroRange)
         {
             currentState = GhostState.Returning;
+            Debug.Log("Player too far. Returning to original position.");
         }
         else
         {
@@ -153,13 +174,17 @@ public class SulyapBehavior : MonoBehaviour
         }
     }
 
-    private void HandleAttackingState()
+    private void HandleAttackingState(float distanceToPlayer)
     {
-        if (attackTimer <= 0)
+        if (distanceToPlayer <= attack.attackRange)
         {
             Attack();
         }
-        currentState = GhostState.Chasing;
+        else
+        {
+            currentState = GhostState.Chasing;
+            Debug.Log("Player out of attack range. Resuming chase.");
+        }
     }
 
     private void HandleReturningState()
@@ -170,6 +195,7 @@ public class SulyapBehavior : MonoBehaviour
         {
             currentState = GhostState.Idle;
             currentIdleTime = Random.Range(movement.minIdleTime, movement.maxIdleTime);
+            Debug.Log("Returned to original position. Transitioning to Idle state.");
         }
     }
 
@@ -178,8 +204,9 @@ public class SulyapBehavior : MonoBehaviour
         Vector3 movement = moveDirection * this.movement.moveSpeed * Time.fixedDeltaTime;
         rb.MovePosition(rb.position + movement);
         Flip(moveDirection.x);
-    }
 
+        Debug.Log($"Moving: Direction = {moveDirection}, Speed = {this.movement.moveSpeed}");
+    }
     private void SetRandomPatrolDirection()
     {
         moveDirection = new Vector3(Random.Range(-1f, 1f), 0, 0).normalized;
@@ -187,11 +214,15 @@ public class SulyapBehavior : MonoBehaviour
 
     private void Attack()
     {
-        if (health.IsDead) return; // Prevent attacks if dead
+        if (health.IsDead) return;
+
+        float currentTime = Time.time;
+        if (currentTime - lastAttackTime < attack.attackCooldown)
+        {
+            return; // Attack is still on cooldown
+        }
 
         animator.SetTrigger("Attack");
-
-        // Play the attack sound when the attack is triggered
         PlaySound(attackSound);
 
         if (attackEffect != null)
@@ -199,13 +230,18 @@ public class SulyapBehavior : MonoBehaviour
             attackEffect.Play();
         }
 
-        // Check if attackPoint is assigned
         if (attack.attackPoint != null)
         {
             Collider[] hitPlayers = Physics.OverlapSphere(attack.attackPoint.position, attack.attackRadius, attack.playerLayer);
-            foreach (Collider player in hitPlayers)
+            foreach (Collider playerCollider in hitPlayers)
             {
-                player.GetComponent<PlayerHealth>()?.TakeDamage(attack.attackDamage);
+                PlayerHealth playerHealth = playerCollider.GetComponent<PlayerHealth>();
+                if (playerHealth != null)
+                {
+                    int damage = CalculateDamage();
+                    playerHealth.TakeDamage(damage);
+                    Debug.Log($"Dealt {damage} damage to player");
+                }
             }
         }
         else
@@ -213,9 +249,21 @@ public class SulyapBehavior : MonoBehaviour
             Debug.LogError("Attack point is not assigned in the AttackSettings!");
         }
 
-        attackTimer = attack.attackCooldown;
+        lastAttackTime = currentTime;
     }
+    private int CalculateDamage()
+    {
+        float variance = Random.Range(-attack.damageVariance, attack.damageVariance);
+        float damageWithVariance = attack.baseDamage * (1 + variance);
 
+        if (Random.value < attack.criticalHitChance)
+        {
+            damageWithVariance *= attack.criticalHitMultiplier;
+            Debug.Log("Critical Hit!");
+        }
+
+        return Mathf.RoundToInt(damageWithVariance);
+    }
     private void UpdateAttackTimer()
     {
         if (attackTimer > 0)

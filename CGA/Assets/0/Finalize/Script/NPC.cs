@@ -259,6 +259,7 @@ public class NPC : MonoBehaviour
             portalUnlockObjectiveText.text = "- Use the Golden Key to unlock the portal.";
         }
     }
+
     public void CompletePortalUnlockObjective()
     {
         if (portalUnlockObjectiveText != null)
@@ -277,12 +278,35 @@ public class NPC : MonoBehaviour
     // Method to spawn mobs after the quest is accepted
     private void SpawnMobs()
     {
-        for (int i = 0; i < spawnPoints.Length; i++)
+        int totalSpawnPoints = spawnPoints.Length;
+        int regularMobTypes = mobPrefabs.Length - 1; // Assuming the last prefab is the miniboss
+
+        List<GameObject> mobsToSpawn = new List<GameObject>();
+
+        // Always include one miniboss
+        mobsToSpawn.Add(mobPrefabs[mobPrefabs.Length - 1]);
+
+        // Fill the remaining slots with regular mobs
+        for (int i = 1; i < totalSpawnPoints; i++)
         {
-            // Randomly select a mob prefab from the array
-            GameObject mobToSpawn = mobPrefabs[Random.Range(0, mobPrefabs.Length)];
-            Instantiate(mobToSpawn, spawnPoints[i].position, spawnPoints[i].rotation);
+            mobsToSpawn.Add(mobPrefabs[Random.Range(0, regularMobTypes)]);
         }
-        Debug.Log("Mobs spawned at designated spawn points.");
+
+        // Shuffle the list to randomize positions
+        for (int i = 0; i < mobsToSpawn.Count; i++)
+        {
+            GameObject temp = mobsToSpawn[i];
+            int randomIndex = Random.Range(i, mobsToSpawn.Count);
+            mobsToSpawn[i] = mobsToSpawn[randomIndex];
+            mobsToSpawn[randomIndex] = temp;
+        }
+
+        // Spawn mobs at designated points
+        for (int i = 0; i < totalSpawnPoints; i++)
+        {
+            Instantiate(mobsToSpawn[i], spawnPoints[i].position, spawnPoints[i].rotation);
+        }
+
+        Debug.Log($"Spawned {totalSpawnPoints} mobs, including 1 miniboss and {totalSpawnPoints - 1} regular mobs.");
     }
 }

@@ -175,21 +175,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movement:
-    moveSpeed: 1
+    moveSpeed: 1.8
     minIdleTime: 2
     maxIdleTime: 5
-    aggroRange: 3
-    deaggroRange: 3
+    aggroRange: 5
+    deaggroRange: 8
   attack:
-    attackRange: 3
-    attackDamage: 12
-    attackCooldown: 1
+    attackRange: 1
+    baseDamage: 8
+    damageVariance: 0.2
+    attackCooldown: 2
     attackPoint: {fileID: 8424638728453662716}
-    attackRadius: 0.47
+    attackRadius: 0.7
     playerLayer:
       serializedVersion: 2
       m_Bits: 64
-  player: {fileID: 0}
+    criticalHitChance: 0
+    criticalHitMultiplier: 1.5
+  player: {fileID: 5733316444713886600, guid: 4cf162eb910f0f34c9dae4b2c6d521f7, type: 3}
   attackEffect: {fileID: 0}
   attackSound: {fileID: 8300000, guid: a4e0d7f342798ca4b98306a9a124bc9d, type: 3}
   facingRight: 0
@@ -205,8 +208,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d038d67ae1b7d540840a31f632c4301, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 30
-  invulnerabilityTime: 0.5
+  maxHealth: 40
+  invulnerabilityTime: 1
   hurtDelay: 0.5
   hurtSound: {fileID: 8300000, guid: e6fdc16766c02ef45a71fe77504b7c6f, type: 3}
   deathSound: {fileID: 8300000, guid: fd3bc0b093c69124b8e489a60742bf8a, type: 3}
@@ -248,7 +251,7 @@ Transform:
   m_GameObject: {fileID: 2685796436156952487}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.03, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

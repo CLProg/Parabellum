@@ -47,7 +47,7 @@ GameObject:
   - component: {fileID: 2877526201320633345}
   - component: {fileID: 4336188907191154194}
   m_Layer: 3
-  m_Name: Multo
+  m_Name: Multo 1
   m_TagString: Untagged
   m_Icon: {fileID: 7250588514170254948, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
