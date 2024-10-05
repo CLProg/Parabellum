@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement; // Include SceneManagement namespace
@@ -29,6 +30,9 @@ public class KamatayanHP : MonoBehaviour
     [SerializeField] private GameObject monsterPrefab;
     [SerializeField] private Transform spawnPosition;
     [SerializeField] private float spawnInterval = 4f;
+
+    // Store references to spawned monsters
+    private List<GameObject> spawnedMonsters = new List<GameObject>();
 
     [Header("UI Settings")]
     [SerializeField] private GameObject endScreenCanvas; // Reference to your end screen Canvas object
@@ -165,6 +169,9 @@ public class KamatayanHP : MonoBehaviour
             spawnCoroutine = null;
         }
 
+        // Destroy all spawned monsters
+        DestroySpawnedMonsters();
+
         StartCoroutine(EndGame());
     }
 
@@ -181,13 +188,24 @@ public class KamatayanHP : MonoBehaviour
     {
         if (monsterPrefab != null && spawnPosition != null)
         {
-            Instantiate(monsterPrefab, spawnPosition.position, Quaternion.identity);
+            GameObject monster = Instantiate(monsterPrefab, spawnPosition.position, Quaternion.identity);
+            spawnedMonsters.Add(monster); // Keep track of the spawned monster
             Debug.Log($"Spawned a monster at position: {spawnPosition.position}");
         }
         else
         {
             Debug.LogWarning("No monster prefab or spawn position assigned!");
         }
+    }
+
+    private void DestroySpawnedMonsters()
+    {
+        foreach (GameObject monster in spawnedMonsters)
+        {
+            Destroy(monster); // Destroy the monster
+            Debug.Log("Monster destroyed.");
+        }
+        spawnedMonsters.Clear(); // Clear the list after destroying
     }
 
     private void PlaySound(AudioClip clip)
@@ -212,7 +230,8 @@ public class KamatayanHP : MonoBehaviour
         }
 
         SetGhostOpacity(0f);
-        Destroy(gameObject); // This will now only happen after the fade-out is complete
+        yield return new WaitForSeconds(3f); // Wait for 1 second before destroying the object
+        Destroy(gameObject); // This will now happen after the fade-out is complete and delay
     }
 
     private void HandleInvulnerabilityTimer()
@@ -254,8 +273,8 @@ public class KamatayanHP : MonoBehaviour
     {
         Debug.Log("Game Ended: Victory or Defeat");
 
-        // Wait for a short period before transitioning
-        yield return new WaitForSeconds(1f); // Optional delay for effect
+        // Wait for 2 seconds before transitioning to the end scene
+        yield return new WaitForSeconds(2f); // Adjust this value as needed for your desired delay
 
         // Load the end scene
         SceneManager.LoadScene("ENDING"); // Ensure this matches the name of your end scene
