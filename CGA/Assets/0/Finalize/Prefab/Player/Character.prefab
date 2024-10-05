@@ -314,8 +314,8 @@ MonoBehaviour:
   attackAnimTrigger: Attack
   hurtAnimationDelay: 0.5
   hurtSound: {fileID: 8300000, guid: d474de02fee55224c8ad3c3ff547ec7b, type: 3}
-  deathSound: {fileID: 0}
-  respawnSound: {fileID: 0}
+  deathSound: {fileID: 8300000, guid: 56655bb9d3a0437469908a1536e76f78, type: 3}
+  respawnSound: {fileID: 8300000, guid: 65cbe086563de1947895a786dc90e03f, type: 3}
   hurtSoundDelay: 0
 --- !u!1 &6210943601143763081
 GameObject:
