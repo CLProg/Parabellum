@@ -235,7 +235,7 @@ public class SulyapBehavior : MonoBehaviour
             Collider[] hitPlayers = Physics.OverlapSphere(attack.attackPoint.position, attack.attackRadius, attack.playerLayer);
             foreach (Collider playerCollider in hitPlayers)
             {
-                PlayerHealth playerHealth = playerCollider.GetComponent<PlayerHealth>();
+                HomobonoHealthBar playerHealth = playerCollider.GetComponent<HomobonoHealthBar>();
                 if (playerHealth != null)
                 {
                     int damage = CalculateDamage();

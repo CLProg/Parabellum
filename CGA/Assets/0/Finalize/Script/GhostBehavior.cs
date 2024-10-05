@@ -202,7 +202,7 @@ public class GhostBehavior : MonoBehaviour
 
         foreach (Collider player in hitPlayers)
         {
-            player.GetComponent<PlayerHealth>()?.TakeDamage(attack.attackDamage);
+            player.GetComponent<HomobonoHealthBar>()?.TakeDamage(attack.attackDamage);
         }
 
         attackTimer = attack.attackCooldown;

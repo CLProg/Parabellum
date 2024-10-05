@@ -86,7 +86,7 @@ GameObject:
   - component: {fileID: 4138101418503451856}
   - component: {fileID: 3703534862703276869}
   - component: {fileID: 3630277328173539798}
-  - component: {fileID: 100541797420030696}
+  - component: {fileID: 625560805801631088}
   m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
@@ -155,7 +155,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &100541797420030696
+--- !u!114 &625560805801631088
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -168,7 +168,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerHealth: {fileID: 0}
-  healthBarImage: {fileID: 3630277328173539798}
+  healthBarImage: {fileID: 5811226868373540298}
 --- !u!1 &4221065544294207234
 GameObject:
   m_ObjectHideFlags: 0

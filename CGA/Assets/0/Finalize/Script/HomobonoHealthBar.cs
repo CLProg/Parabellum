@@ -6,7 +6,7 @@ public class HomobonoHealthBar : MonoBehaviour
 {
     [Header("Health Settings")]
     public int maxHealth = 100;
-    public int currentHealth;
+    public int currentHealth = 100;
 
     [Header("Respawn Settings")]
     public Transform respawnPoint;

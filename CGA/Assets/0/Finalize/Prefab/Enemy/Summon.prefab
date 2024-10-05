@@ -181,7 +181,7 @@ MonoBehaviour:
     aggroRange: 5
     deaggroRange: 8
   attack:
-    attackRange: 2
+    attackRange: 3
     attackDamage: 4
     attackCooldown: 1
     attackPoint: {fileID: 4326103402093352136}
@@ -189,7 +189,7 @@ MonoBehaviour:
     playerLayer:
       serializedVersion: 2
       m_Bits: 64
-  player: {fileID: 0}
+  player: {fileID: 8054562395613155238, guid: 38e5ac56f5c9aa94eb24ae4ca570985a, type: 3}
   attackEffect: {fileID: 0}
   attackSound: {fileID: 8300000, guid: a4e0d7f342798ca4b98306a9a124bc9d, type: 3}
   facingRight: 1
