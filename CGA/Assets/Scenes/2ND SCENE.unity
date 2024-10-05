@@ -6899,10 +6899,45 @@ PrefabInstance:
       propertyPath: respawnPoint
       value: 
       objectReference: {fileID: 981063167}
+    - target: {fileID: 3495007607828086329, guid: 4cf162eb910f0f34c9dae4b2c6d521f7,
+        type: 3}
+      propertyPath: m_RenderShadows
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5733316444713886600, guid: 4cf162eb910f0f34c9dae4b2c6d521f7,
         type: 3}
       propertyPath: m_Name
       value: Character
+      objectReference: {fileID: 0}
+    - target: {fileID: 7756374172335604819, guid: 4cf162eb910f0f34c9dae4b2c6d521f7,
+        type: 3}
+      propertyPath: m_ClearFlags
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7756374172335604819, guid: 4cf162eb910f0f34c9dae4b2c6d521f7,
+        type: 3}
+      propertyPath: field of view
+      value: 40.84654
+      objectReference: {fileID: 0}
+    - target: {fileID: 7756374172335604819, guid: 4cf162eb910f0f34c9dae4b2c6d521f7,
+        type: 3}
+      propertyPath: m_FOVAxisMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7756374172335604819, guid: 4cf162eb910f0f34c9dae4b2c6d521f7,
+        type: 3}
+      propertyPath: m_FocalLength
+      value: 22.787184
+      objectReference: {fileID: 0}
+    - target: {fileID: 7756374172335604819, guid: 4cf162eb910f0f34c9dae4b2c6d521f7,
+        type: 3}
+      propertyPath: far clip plane
+      value: 225
+      objectReference: {fileID: 0}
+    - target: {fileID: 7756374172335604819, guid: 4cf162eb910f0f34c9dae4b2c6d521f7,
+        type: 3}
+      propertyPath: m_projectionMatrixMode
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8464832027977589318, guid: 4cf162eb910f0f34c9dae4b2c6d521f7,
         type: 3}
