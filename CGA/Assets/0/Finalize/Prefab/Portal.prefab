@@ -125,12 +125,16 @@ MonoBehaviour:
   promptMessage: {fileID: 2724608485153624859}
   interactionButton: {fileID: 4339984677693771375}
   npc: {fileID: 0}
+  canvasAnimator: {fileID: 0}
   interactionDistance: 5
   interactionKey: 101
   destinationSceneName: 2ND SCENE
-  teleportDelay: 2
+  teleportDelay: 1
   childObjectsToToggle:
   - {fileID: 8746889044835476630}
+  canvasesToHide:
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!1 &2276306072309370192
 GameObject:
   m_ObjectHideFlags: 0
@@ -241,7 +245,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.042455204}
   m_AnchorMax: {x: 0.5, y: 0.042455204}
-  m_AnchoredPosition: {x: -99.7, y: -16}
+  m_AnchoredPosition: {x: -99.7, y: -15.9999695}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5052944523711523222

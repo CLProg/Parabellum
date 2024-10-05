@@ -11,6 +11,7 @@ public class Portal : MonoBehaviour
     public GameObject promptMessage;
     public GameObject interactionButton;
     public NPC npc;
+    public Animator canvasAnimator; // Reference to Animator controlling fade animations
 
     [Header("Settings")]
     public float interactionDistance = 3f;
@@ -20,6 +21,7 @@ public class Portal : MonoBehaviour
 
     [Header("Child Objects")]
     public List<GameObject> childObjectsToToggle; // List of child objects to hide/show
+    public GameObject[] canvasesToHide; // Array of canvases to hide
 
     private Transform playerTransform;
     private bool isPlayerInRange = false;
@@ -33,6 +35,7 @@ public class Portal : MonoBehaviour
         interactionButton.SetActive(false);
         promptText = promptMessage.GetComponentInChildren<TextMeshProUGUI>();
         HideToggleableChildObjects(); // Hide specified child objects on start
+        // Hide specified canvases on start
     }
 
     private void Update()
@@ -181,8 +184,14 @@ public class Portal : MonoBehaviour
 
     private IEnumerator TeleportPlayer()
     {
-        // Wait for the specified delay
-        yield return new WaitForSeconds(teleportDelay);
+        // Hide the specified canvases before the fade-out animation
+        HideCanvases();
+
+        // Play the fade-out animation
+        canvasAnimator.SetTrigger("Start");
+
+        // Wait for the duration of the fade-out animation
+        yield return new WaitForSeconds(1.0f); // Replace with the actual duration if known
 
         // Check if the destination scene name is set
         if (string.IsNullOrEmpty(destinationSceneName))
@@ -191,9 +200,10 @@ public class Portal : MonoBehaviour
             yield break;
         }
 
-        // Teleport the player to the new scene
+        // Load the new scene
         SceneManager.LoadScene(destinationSceneName);
     }
+
 
     private void HideToggleableChildObjects()
     {
@@ -213,6 +223,17 @@ public class Portal : MonoBehaviour
             if (child != null)
             {
                 child.SetActive(true);
+            }
+        }
+    }
+
+    private void HideCanvases()
+    {
+        foreach (GameObject canvas in canvasesToHide)
+        {
+            if (canvas != null)
+            {
+                canvas.SetActive(false); // Hide each specified canvas
             }
         }
     }
