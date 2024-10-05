@@ -126,8 +126,6 @@ GameObject:
   - component: {fileID: 2347368368561553249}
   - component: {fileID: 2156841791662944397}
   - component: {fileID: 2332459210623815254}
-  - component: {fileID: 2807181171198217517}
-  - component: {fileID: 2675033297635060439}
   - component: {fileID: 8464832027977589318}
   - component: {fileID: 2789828530025945047}
   m_Layer: 6
@@ -214,55 +212,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 1.7295486
-  m_Height: 9.124188
+  m_Height: 10.369559
   m_Direction: 1
-  m_Center: {x: -0.0443846, y: 5.104363, z: 0}
---- !u!136 &2807181171198217517
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5733316444713886600}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.25
-  m_Height: 1
-  m_Direction: 1
-  m_Center: {x: -0.53, y: 0.5, z: 0}
---- !u!136 &2675033297635060439
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5733316444713886600}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.25
-  m_Height: 1
-  m_Direction: 1
-  m_Center: {x: 0.49, y: 0.5, z: 0}
+  m_Center: {x: -0.0443846, y: 4.4816775, z: 0}
 --- !u!114 &8464832027977589318
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -286,7 +238,7 @@ MonoBehaviour:
   attackPoint: {fileID: 3966492525923688073}
   attackSound: {fileID: 8300000, guid: d7b06bf078c23614e821ec705e430a9d, type: 3}
   hitSound: {fileID: 8300000, guid: 4f459ba9ef5d05045ad6461a805833af, type: 3}
-  attackVolume: 0.5
+  attackVolume: 0.379
   hitVolume: 0.3
 --- !u!114 &2789828530025945047
 MonoBehaviour:
@@ -303,7 +255,7 @@ MonoBehaviour:
   maxHealth: 100
   currentHealth: 100
   respawnPoint: {fileID: 0}
-  respawnDelay: 2
+  respawnDelay: 3
   invulnerabilityDuration: 1
   healthBar: {fileID: 0}
   healthBarUpdateDelay: 0.1
@@ -345,7 +297,7 @@ Transform:
   m_GameObject: {fileID: 6210943601143763081}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 4.5, y: 11.83, z: -38.82}
+  m_LocalPosition: {x: 4.5, y: 7.89, z: -32.51}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -383,8 +335,8 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.01
-  far clip plane: 19.3
-  field of view: 40.84654
+  far clip plane: 225
+  field of view: 31.168629
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
