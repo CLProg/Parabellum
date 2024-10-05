@@ -1580,7 +1580,7 @@ PrefabInstance:
         type: 3}
       propertyPath: playerTransform
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 8502091981987630807}
     - target: {fileID: 477887245941048822, guid: 138bea4fcc575f24bb71a706968042c1,
         type: 3}
       propertyPath: currentQuestCanvas
@@ -11061,6 +11061,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f202c083eeb4951449db131dcc510d5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!4 &8502091981987630807 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6684485885707949875, guid: 38e5ac56f5c9aa94eb24ae4ca570985a,
+    type: 3}
+  m_PrefabInstance: {fileID: 8502091981987630804}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -9412,10 +9412,20 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7033114611097623668, guid: 38e5ac56f5c9aa94eb24ae4ca570985a,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -27.97
+      objectReference: {fileID: 0}
     - target: {fileID: 8054562395613155238, guid: 38e5ac56f5c9aa94eb24ae4ca570985a,
         type: 3}
       propertyPath: m_Name
       value: Homobono
+      objectReference: {fileID: 0}
+    - target: {fileID: 9181520086122849759, guid: 38e5ac56f5c9aa94eb24ae4ca570985a,
+        type: 3}
+      propertyPath: far clip plane
+      value: 225
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -9428,12 +9438,24 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 1586355639}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1586355641}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f202c083eeb4951449db131dcc510d5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1586355641 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8054562395613155238, guid: 38e5ac56f5c9aa94eb24ae4ca570985a,
+    type: 3}
+  m_PrefabInstance: {fileID: 1586355639}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1586355647 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6684485885707949875, guid: 38e5ac56f5c9aa94eb24ae4ca570985a,
+    type: 3}
+  m_PrefabInstance: {fileID: 1586355639}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1651943858
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10003,7 +10025,7 @@ PrefabInstance:
         type: 3}
       propertyPath: player
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1586355641}
     - target: {fileID: 6653265668766581059, guid: 6185410ef89d5ef47967535a3ba08ef1,
         type: 3}
       propertyPath: attack.attackRange
@@ -10093,7 +10115,7 @@ PrefabInstance:
         type: 3}
       propertyPath: playerTransform
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1586355647}
     - target: {fileID: 7466261409339101423, guid: 6185410ef89d5ef47967535a3ba08ef1,
         type: 3}
       propertyPath: invulnerabilityTime
