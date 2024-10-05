@@ -14,7 +14,7 @@ public class NPC : MonoBehaviour
     [Header("Quest Objectives")]
     public List<TextMeshProUGUI> objectiveTexts;
     public TextMeshProUGUI soulDefeatObjectiveText;
-    public TextMeshProUGUI keyCollectObjectiveText; // Reference to the key collection objective text
+    public TextMeshProUGUI keyCollectObjectiveText;
     public TextMeshProUGUI portalUnlockObjectiveText;
 
     [Header("Settings")]
@@ -26,9 +26,8 @@ public class NPC : MonoBehaviour
     [Header("Soul Defeat Objective")]
     public int requiredSoulDefeats = 3;
 
-    [Header("Mob Spawning")]
-    public GameObject[] mobPrefabs; // Array for different mob prefabs
-    public Transform[] spawnPoints; // Array of spawn points
+    [Header("Mob Objects")]
+    public GameObject[] mobObjects; // Array of mob GameObjects to enable
 
     private bool isPlayerInRange = false;
     private Canvas questWindowCanvas;
@@ -56,10 +55,12 @@ public class NPC : MonoBehaviour
         HideCurrentQuestCanvas();
         UpdateSoulDefeatObjective();
         UpdatePortalUnlockObjective();
-        // Remove the call to UpdateKeyCollectObjective here
 
         // Subscribe to the mob death event
         GameEvents.OnMobKilled += HandleMobKilled;
+
+        // Disable all mob objects at start
+        DisableAllMobObjects();
     }
 
     private void OnDisable()
@@ -168,8 +169,8 @@ public class NPC : MonoBehaviour
         ShowCurrentQuestCanvas();
         HideQuestWindow();
 
-        // Call the method to spawn mobs
-        SpawnMobs();
+        // Enable mob objects instead of spawning
+        EnableMobObjects();
     }
 
     private void ShowCurrentQuestCanvas()
@@ -241,7 +242,6 @@ public class NPC : MonoBehaviour
         Debug.Log("Soul defeat objective completed!");
     }
 
-    // New method to update key collection objective
     public void UpdateKeyCollectObjective()
     {
         if (keyCollectObjectiveText != null)
@@ -275,38 +275,31 @@ public class NPC : MonoBehaviour
         return keyCollectObjectiveText.color == completedObjectiveColor;
     }
 
-    // Method to spawn mobs after the quest is accepted
-    private void SpawnMobs()
+    // New method to disable all mob objects at start
+    private void DisableAllMobObjects()
     {
-        int totalSpawnPoints = spawnPoints.Length;
-        int regularMobTypes = mobPrefabs.Length - 1; // Assuming the last prefab is the miniboss
-
-        List<GameObject> mobsToSpawn = new List<GameObject>();
-
-        // Always include one miniboss
-        mobsToSpawn.Add(mobPrefabs[mobPrefabs.Length - 1]);
-
-        // Fill the remaining slots with regular mobs
-        for (int i = 1; i < totalSpawnPoints; i++)
+        foreach (GameObject mobObject in mobObjects)
         {
-            mobsToSpawn.Add(mobPrefabs[Random.Range(0, regularMobTypes)]);
+            if (mobObject != null)
+            {
+                mobObject.SetActive(false);
+            }
         }
+        Debug.Log("All mob objects disabled at start.");
+    }
 
-        // Shuffle the list to randomize positions
-        for (int i = 0; i < mobsToSpawn.Count; i++)
+    // New method to enable mob objects when the quest is accepted
+    private void EnableMobObjects()
+    {
+        int enabledCount = 0;
+        foreach (GameObject mobObject in mobObjects)
         {
-            GameObject temp = mobsToSpawn[i];
-            int randomIndex = Random.Range(i, mobsToSpawn.Count);
-            mobsToSpawn[i] = mobsToSpawn[randomIndex];
-            mobsToSpawn[randomIndex] = temp;
+            if (mobObject != null)
+            {
+                mobObject.SetActive(true);
+                enabledCount++;
+            }
         }
-
-        // Spawn mobs at designated points
-        for (int i = 0; i < totalSpawnPoints; i++)
-        {
-            Instantiate(mobsToSpawn[i], spawnPoints[i].position, spawnPoints[i].rotation);
-        }
-
-        Debug.Log($"Spawned {totalSpawnPoints} mobs, including 1 miniboss and {totalSpawnPoints - 1} regular mobs.");
+        Debug.Log($"Enabled {enabledCount} mob objects.");
     }
 }

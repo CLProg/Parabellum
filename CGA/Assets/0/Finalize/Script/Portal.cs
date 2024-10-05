@@ -89,7 +89,7 @@ public class Portal : MonoBehaviour
         }
         else if (!hasKey && !isSoulObjectiveCompleted)
         {
-            promptText.text = "You need the Golden Key and to defeat all souls to open this.";
+            promptText.text = "You need the Golden Key and defeat all souls to open this.";
         }
         else if (!hasKey)
         {
