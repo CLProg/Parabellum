@@ -8443,26 +8443,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2332459210623815254, guid: 4cf162eb910f0f34c9dae4b2c6d521f7,
-        type: 3}
-      propertyPath: m_Height
-      value: 10.369559
-      objectReference: {fileID: 0}
-    - target: {fileID: 2332459210623815254, guid: 4cf162eb910f0f34c9dae4b2c6d521f7,
-        type: 3}
-      propertyPath: m_Center.y
-      value: 4.4816775
-      objectReference: {fileID: 0}
     - target: {fileID: 2789828530025945047, guid: 4cf162eb910f0f34c9dae4b2c6d521f7,
         type: 3}
       propertyPath: healthBar
       value: 
       objectReference: {fileID: 628151254}
-    - target: {fileID: 2789828530025945047, guid: 4cf162eb910f0f34c9dae4b2c6d521f7,
-        type: 3}
-      propertyPath: respawnDelay
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 2789828530025945047, guid: 4cf162eb910f0f34c9dae4b2c6d521f7,
         type: 3}
       propertyPath: respawnPoint
@@ -8473,36 +8458,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Character
       objectReference: {fileID: 0}
-    - target: {fileID: 5751704447804538019, guid: 4cf162eb910f0f34c9dae4b2c6d521f7,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 7.89
-      objectReference: {fileID: 0}
-    - target: {fileID: 5751704447804538019, guid: 4cf162eb910f0f34c9dae4b2c6d521f7,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -32.51
-      objectReference: {fileID: 0}
-    - target: {fileID: 7756374172335604819, guid: 4cf162eb910f0f34c9dae4b2c6d521f7,
-        type: 3}
-      propertyPath: field of view
-      value: 31.168629
-      objectReference: {fileID: 0}
-    - target: {fileID: 7756374172335604819, guid: 4cf162eb910f0f34c9dae4b2c6d521f7,
-        type: 3}
-      propertyPath: m_FOVAxisMode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7756374172335604819, guid: 4cf162eb910f0f34c9dae4b2c6d521f7,
-        type: 3}
-      propertyPath: far clip plane
-      value: 225
-      objectReference: {fileID: 0}
-    - target: {fileID: 8464832027977589318, guid: 4cf162eb910f0f34c9dae4b2c6d521f7,
-        type: 3}
-      propertyPath: attackVolume
-      value: 0.379
-      objectReference: {fileID: 0}
     - target: {fileID: 9171845610187065711, guid: 4cf162eb910f0f34c9dae4b2c6d521f7,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -8511,7 +8466,7 @@ PrefabInstance:
     - target: {fileID: 9171845610187065711, guid: 4cf162eb910f0f34c9dae4b2c6d521f7,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.42
+      value: 0.453
       objectReference: {fileID: 0}
     - target: {fileID: 9171845610187065711, guid: 4cf162eb910f0f34c9dae4b2c6d521f7,
         type: 3}
@@ -8553,9 +8508,7 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 2807181171198217517, guid: 4cf162eb910f0f34c9dae4b2c6d521f7, type: 3}
-    - {fileID: 2675033297635060439, guid: 4cf162eb910f0f34c9dae4b2c6d521f7, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
